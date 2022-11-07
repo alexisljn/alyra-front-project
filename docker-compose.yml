@@ -2,7 +2,7 @@ services:
   hardhat:
     container_name: hardhat
     image: node:16
-    working_dir: /home/node/app
+    working_dir: /home/node/app/blockchain-backend/
     environment:
       - REPORT_GAS=TRUE
     volumes:
