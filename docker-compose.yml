@@ -2,7 +2,7 @@ services:
   hardhat:
     container_name: hardhat
     image: node:16
-    working_dir: /home/node/app
+    working_dir: /home/node/app/blockchain-backend/
     environment:
       - REPORT_GAS=TRUE
     volumes:
@@ -10,3 +10,13 @@ services:
     ports:
       - "8545:8545"
     command: sh -c "npm install --verbose && npx hardhat node"
+
+  react:
+    container_name: react
+    image: node:16
+    working_dir: /home/node/app
+    volumes:
+      - ./frontend:/home/node/app
+    ports:
+      - "80:3000"
+    command: sh -c "npm install --verbose && npm run start"
