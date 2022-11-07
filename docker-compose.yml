@@ -15,6 +15,8 @@ services:
     container_name: react
     image: node:16
     working_dir: /home/node/app
+    environment:
+      - WDS_SOCKET_PORT=0
     volumes:
       - ./frontend:/home/node/app
     ports:
