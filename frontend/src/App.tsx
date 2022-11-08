@@ -35,15 +35,14 @@ function App() {
         setIsAddress(address);
     }, [])
 
-    <>
-        <UserContext.Provider value={{isLogged, provider, toggleIsLogged, address, changeAddress}}>
-            <Header/>
-            <div className="container-fluid">
-            <button className="btn btn-lg btn-primary">Test</button>
-            </div>
-        </UserContext.Provider>
-    </>
-  );
+    useEffect(() => {
+        if (window.hasOwnProperty('ethereum')) {
+
+            setIsProvider(new providers.Web3Provider(window.ethereum));
+
+        }
+    }, []);
+
 }
 
 export {App, UserContext};
