@@ -40,6 +40,16 @@ function App() {
 
             setIsProvider(new providers.Web3Provider(window.ethereum));
 
+            // events disconnect chainChanged accountsChanged
+            window.ethereum.on('chainChanged', (e) => {
+                console.log(e) // e = chainId en hex
+            });
+
+            window.ethereum.on("accountsChanged", (accounts: any) => {
+                if (accounts[0] && typeof accounts[0] === "string") {
+                    changeAddress(accounts[0]);
+                }
+            });
         }
     }, []);
 
