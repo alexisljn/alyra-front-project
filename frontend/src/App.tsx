@@ -18,7 +18,21 @@ const UserContext = createContext<UserContext>({
 });
 
 function App() {
-  return (
+
+    const [isLogged, setIsLogged] = useState(false);
+
+    const [provider, setIsProvider] = useState< providers.Web3Provider | null>(null);
+
+    const [address, setIsAddress] = useState("");
+
+    const toggleIsLogged = useCallback(() => {
+        setIsLogged(isLogged => !isLogged);
+    }, []);
+
+    const changeAddress = useCallback((address: string) => {
+        setIsAddress(address);
+    }, [])
+
     <>
       <div>
         Header
