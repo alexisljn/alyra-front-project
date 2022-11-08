@@ -37,7 +37,7 @@ function Header() {
                     :
                         <div className="d-flex align-items-center">
                             <div>
-                                <p style={{position: "relative", top: "20%"}}>{address}</p>
+                                <p style={{position: "relative", top: 10}}>{address}</p>
                             </div>
                             <div style={{marginLeft: 5}}>
                                 <button className="btn btn-danger" onClick={disconnectWallet}>Disconnect</button>
