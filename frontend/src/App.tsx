@@ -1,5 +1,7 @@
-import React from 'react';
+import React, {createContext, useCallback, useEffect, useMemo, useState} from 'react';
 import './App.css';
+import {ethers, providers} from "ethers";
+import Header from "./components/Header";
 
 interface UserContext {
     provider: providers.Web3Provider | null
@@ -34,12 +36,12 @@ function App() {
     }, [])
 
     <>
-      <div>
-        Header
-      </div>
-      <div className="container-fluid">
-        <button className="btn btn-lg btn-primary">Test</button>
-      </div>
+        <UserContext.Provider value={{isLogged, provider, toggleIsLogged, address, changeAddress}}>
+            <Header/>
+            <div className="container-fluid">
+            <button className="btn btn-lg btn-primary">Test</button>
+            </div>
+        </UserContext.Provider>
     </>
   );
 }
