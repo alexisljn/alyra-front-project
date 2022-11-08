@@ -53,6 +53,16 @@ function App() {
         }
     }, []);
 
+    return(
+        <>
+            <UserContext.Provider value={{isLogged, provider, toggleIsLogged, address, changeAddress}}>
+                <Header/>
+                <div className="container-fluid">
+                <button className="btn btn-lg btn-primary">Test</button>
+                </div>
+            </UserContext.Provider>
+        </>
+    );
 }
 
 export {App, UserContext};
