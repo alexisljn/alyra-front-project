@@ -5,7 +5,6 @@ import Header from "./components/Header";
 import {DEFAULT_ADDRESS, getLastUsedAddress, saveAddressInLocalStorage} from "./Util";
 
 interface UserContext {
-    provider: providers.Web3Provider | null
     isLogged: boolean
     address: string
     toggleIsLogged: () => void,
@@ -13,7 +12,6 @@ interface UserContext {
 }
 
 const UserContext = createContext<UserContext>({
-    provider: null,
     isLogged: false,
     address: '',
     toggleIsLogged: () => {},
@@ -23,8 +21,6 @@ const UserContext = createContext<UserContext>({
 function App() {
 
     const [isLogged, setIsLogged] = useState(false);
-
-    const [provider, setIsProvider] = useState< providers.Web3Provider | null>(null);
 
     const [address, setIsAddress] = useState("");
 
@@ -73,7 +69,7 @@ function App() {
 
     return(
         <>
-            <UserContext.Provider value={{isLogged, provider, toggleIsLogged, address, changeAddress}}>
+            <UserContext.Provider value={{isLogged, toggleIsLogged, address, changeAddress, isAdmin}}>
                 <Header/>
                 <div className="container-fluid">
                 <button className="btn btn-lg btn-primary">Test</button>
