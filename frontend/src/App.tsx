@@ -2,6 +2,7 @@ import React, {createContext, useCallback, useEffect, useState} from 'react';
 import './App.css';
 import Header from "./components/Header";
 import {DEFAULT_ADDRESS, getLastUsedAddress, saveAddressInLocalStorage} from "./Util";
+import {ContractManager} from "./managers/ContractManager";
 
 interface UserContext {
     isLogged: boolean
@@ -34,7 +35,9 @@ function App() {
     const changeAddress = useCallback(async (address: string) => {
         setIsAddress(address);
 
-        if (address !== "") {
+        setIsAdmin(await ContractManager.isCurrentUserOwner(address));
+
+        if (address !== DEFAULT_ADDRESS) {
             saveAddressInLocalStorage(address);
         }
 
@@ -52,23 +55,35 @@ function App() {
     }, [])
 
     useEffect(() => {
-        if (window.hasOwnProperty('ethereum')) {
+        (async () => {
+            if (window.hasOwnProperty('ethereum')) {
 
-            setIsProvider(new providers.Web3Provider(window.ethereum));
+                ContractManager.setProvider()
+
+                try {
+                    await ContractManager.attachToContract();
 
                     await handleAutoLogin();
 
-            // events disconnect chainChanged accountsChanged
-            window.ethereum.on('chainChanged', (e) => {
-                console.log(e) // e = chainId en hex
-            });
+                } catch (error) {
+                    alert('Couldn\'t connect to contract');
 
-            window.ethereum.on("accountsChanged", (accounts: any) => {
-                if (accounts[0] && typeof accounts[0] === "string") {
-                    changeAddress(accounts[0]);
+                    console.error(error);
                 }
-            });
-        }
+
+                // events disconnect chainChanged accountsChanged
+                window.ethereum.on('chainChanged', (e) => {
+                    console.log(e) // e = chainId en hex
+                    //TODO les appels onChain ne marcheront plus
+                });
+
+                window.ethereum.on("accountsChanged", async (accounts: any) => {
+                    if (accounts[0] && typeof accounts[0] === "string") {
+                        await changeAddress(accounts[0]);
+                    }
+                });
+            }
+        })();
     }, []);
 
     return(
