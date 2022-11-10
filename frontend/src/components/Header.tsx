@@ -25,8 +25,10 @@ function Header() {
     }
 
     const disconnectWallet = () => {
-        localStorage.removeItem(`@${address}`);
-        changeAddress('');
+        removeAddressFromLocalStorage(address);
+
+        changeAddress(DEFAULT_ADDRESS);
+
         toggleIsLogged();
     }
 
