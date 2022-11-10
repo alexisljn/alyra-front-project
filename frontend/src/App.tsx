@@ -31,20 +31,21 @@ function App() {
         setIsLogged(isLogged => !isLogged);
     }, []);
 
-    const changeAddress = useCallback((address: string) => {
+    const changeAddress = useCallback(async (address: string) => {
         setIsAddress(address);
 
         if (address !== "") {
             saveAddressInLocalStorage(address);
         }
 
+    }, []);
 
-    const handleAutoLogin = useCallback(() => {
+    const handleAutoLogin = useCallback(async () => {
         const lastUsedAddress = getLastUsedAddress();
 
         if (lastUsedAddress !== DEFAULT_ADDRESS) {
 
-            changeAddress(lastUsedAddress);
+            await changeAddress(lastUsedAddress);
 
             toggleIsLogged();
         }
@@ -55,7 +56,7 @@ function App() {
 
             setIsProvider(new providers.Web3Provider(window.ethereum));
 
-            handleAutoLogin();
+                    await handleAutoLogin();
 
             // events disconnect chainChanged accountsChanged
             window.ethereum.on('chainChanged', (e) => {
