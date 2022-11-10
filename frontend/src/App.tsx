@@ -2,6 +2,7 @@ import React, {createContext, useCallback, useEffect, useMemo, useState} from 'r
 import './App.css';
 import {ethers, providers} from "ethers";
 import Header from "./components/Header";
+import {DEFAULT_ADDRESS, getLastUsedAddress, saveAddressInLocalStorage} from "./Util";
 
 interface UserContext {
     provider: providers.Web3Provider | null
@@ -33,12 +34,24 @@ function App() {
 
     const changeAddress = useCallback((address: string) => {
         setIsAddress(address);
+
+    const handleAutoLogin = useCallback(() => {
+        const lastUsedAddress = getLastUsedAddress();
+
+        if (lastUsedAddress !== DEFAULT_ADDRESS) {
+
+            changeAddress(lastUsedAddress);
+
+            toggleIsLogged();
+        }
     }, [])
 
     useEffect(() => {
         if (window.hasOwnProperty('ethereum')) {
 
             setIsProvider(new providers.Web3Provider(window.ethereum));
+
+            handleAutoLogin();
 
             // events disconnect chainChanged accountsChanged
             window.ethereum.on('chainChanged', (e) => {
