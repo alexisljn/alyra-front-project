@@ -35,6 +35,11 @@ function App() {
     const changeAddress = useCallback((address: string) => {
         setIsAddress(address);
 
+        if (address !== "") {
+            saveAddressInLocalStorage(address);
+        }
+
+
     const handleAutoLogin = useCallback(() => {
         const lastUsedAddress = getLastUsedAddress();
 
