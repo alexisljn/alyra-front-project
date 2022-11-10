@@ -1,12 +1,12 @@
-import React, {createContext, useCallback, useEffect, useMemo, useState} from 'react';
+import React, {createContext, useCallback, useEffect, useState} from 'react';
 import './App.css';
-import {ethers, providers} from "ethers";
 import Header from "./components/Header";
 import {DEFAULT_ADDRESS, getLastUsedAddress, saveAddressInLocalStorage} from "./Util";
 
 interface UserContext {
     isLogged: boolean
     address: string
+    isAdmin: boolean
     toggleIsLogged: () => void,
     changeAddress: (address: string) => void,
 }
@@ -14,6 +14,7 @@ interface UserContext {
 const UserContext = createContext<UserContext>({
     isLogged: false,
     address: '',
+    isAdmin: false,
     toggleIsLogged: () => {},
     changeAddress: () => {}
 });
@@ -23,6 +24,8 @@ function App() {
     const [isLogged, setIsLogged] = useState(false);
 
     const [address, setIsAddress] = useState("");
+
+    const [isAdmin, setIsAdmin] = useState(false);
 
     const toggleIsLogged = useCallback(() => {
         setIsLogged(isLogged => !isLogged);
