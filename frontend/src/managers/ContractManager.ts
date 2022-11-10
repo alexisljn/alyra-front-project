@@ -27,6 +27,16 @@ class ContractManager {
         )
     }
 
+    static async isCurrentUserOwner(userAddress: string) {
+        if (userAddress === DEFAULT_ADDRESS) {
+            return false;
+        }
+
+        const owner: string = await ContractManager.contract.owner();
+
+        return ContractManager.formatAddressWithChecksum(userAddress) === owner;
+    }
+
 }
 
 export {ContractManager};
