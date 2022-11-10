@@ -11,6 +11,14 @@ class ContractManager {
         ContractManager.provider = new providers.Web3Provider(window.ethereum);
     }
 
+    static async getAbi() {
+        const response = await fetch('artifacts/contracts/voting.sol/Voting.json');
+
+        const contractArtifact = await response.json()
+
+        return contractArtifact.abi;
+    }
+
 }
 
 export {ContractManager};
