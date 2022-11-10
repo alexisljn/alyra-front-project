@@ -19,6 +19,14 @@ class ContractManager {
         return contractArtifact.abi;
     }
 
+    static async attachToContract() {
+        ContractManager.contract = new ethers.Contract(
+            process.env.REACT_APP_CONTRACT_ADDRESS || DEFAULT_ADDRESS,
+            await ContractManager.getAbi(),
+            ContractManager.provider
+        )
+    }
+
 }
 
 export {ContractManager};
