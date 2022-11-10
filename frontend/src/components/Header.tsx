@@ -1,16 +1,19 @@
 import React, {useContext} from "react";
 import {UserContext} from "../App";
+import {DEFAULT_ADDRESS, removeAddressFromLocalStorage} from "../Util";
+import {ContractManager} from "../managers/ContractManager";
 
 function Header() {
-    const {isLogged, provider, changeAddress, address, toggleIsLogged} = useContext(UserContext);
+    const {isLogged, changeAddress, address, toggleIsLogged} = useContext(UserContext);
 
     const connectWallet =  async () => {
-        if (provider !== null) {
+        if (ContractManager.provider) {
             try {
-                const accounts: string[] = await provider.send("eth_requestAccounts", []);
+                const accounts: string[] = await ContractManager.provider.send("eth_requestAccounts", []);
+
                 changeAddress(accounts[0]);
+
                 toggleIsLogged();
-                window.localStorage.setItem(`@${accounts[0]}`, JSON.stringify(''));
             } catch (error) {
                 console.error(error); // Logging for user
             }
