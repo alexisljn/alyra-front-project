@@ -37,6 +37,9 @@ class ContractManager {
         return ContractManager.formatAddressWithChecksum(userAddress) === owner;
     }
 
+    static formatAddressWithChecksum(address: string) {
+        return ethers.utils.getAddress(address);
+    }
 }
 
 export {ContractManager};
