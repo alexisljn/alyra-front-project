@@ -19,6 +19,9 @@ const config: HardhatUserConfig = {
     //     mnemonic: process.env.MNEMONIC
     //   }
     // }
+  },
+  paths: {
+    artifacts: "../frontend/public/artifacts"
   }
 };
 
