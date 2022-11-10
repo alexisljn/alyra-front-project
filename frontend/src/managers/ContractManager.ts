@@ -7,6 +7,10 @@ class ContractManager {
 
     static contract: Contract;
 
+    static setProvider() {
+        ContractManager.provider = new providers.Web3Provider(window.ethereum);
+    }
+
 }
 
 export {ContractManager};
