@@ -24,7 +24,7 @@ function App() {
 
     const [isLogged, setIsLogged] = useState(false);
 
-    const [address, setIsAddress] = useState("");
+    const [address, setAddress] = useState("");
 
     const [isAdmin, setIsAdmin] = useState(false);
 
@@ -32,23 +32,15 @@ function App() {
         setIsLogged(isLogged => !isLogged);
     }, []);
 
-    const changeAddress = useCallback(async (address: string) => {
-        setIsAddress(address);
-
-        setIsAdmin(await ContractManager.isCurrentUserOwner(address));
-
-        if (address !== DEFAULT_ADDRESS) {
-            saveAddressInLocalStorage(address);
-        }
-
+    const changeAddress = useCallback((address: string) => {
+        setAddress(address);
     }, []);
 
     const handleAutoLogin = useCallback(async () => {
         const lastUsedAddress = getLastUsedAddress();
 
         if (lastUsedAddress !== DEFAULT_ADDRESS) {
-
-            await changeAddress(lastUsedAddress);
+            setAddress(lastUsedAddress);
 
             toggleIsLogged();
         }
@@ -57,7 +49,6 @@ function App() {
     useEffect(() => {
         (async () => {
             if (window.hasOwnProperty('ethereum')) {
-
                 ContractManager.setProvider()
 
                 try {
@@ -77,9 +68,9 @@ function App() {
                     //TODO les appels onChain ne marcheront plus
                 });
 
-                window.ethereum.on("accountsChanged", async (accounts: any) => {
+                window.ethereum.on("accountsChanged", (accounts: any) => {
                     if (accounts[0] && typeof accounts[0] === "string") {
-                        await changeAddress(accounts[0]);
+                        setAddress(accounts[0]);
                     }
                 });
             }
