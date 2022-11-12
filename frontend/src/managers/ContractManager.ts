@@ -1,11 +1,11 @@
 import {Contract, ethers, providers} from "ethers";
-import {DEFAULT_ADDRESS} from "../Util";
+import {DEFAULT_ADDRESS, formatAddressWithChecksum} from "../Util";
 
 class ContractManager {
 
     static provider: providers.Web3Provider;
 
-    static contract: Contract;
+    static contract: Contract | null;
 
     static setProvider() {
         ContractManager.provider = new providers.Web3Provider(window.ethereum);
@@ -27,18 +27,19 @@ class ContractManager {
         )
     }
 
+    static resetContract() {
+        ContractManager.contract = null;
+    }
+
     static async isCurrentUserOwner(userAddress: string) {
-        if (userAddress === DEFAULT_ADDRESS) {
+        //TODO si bon chainId sinon false
+        if (userAddress === DEFAULT_ADDRESS || !ContractManager.contract) {
             return false;
         }
 
         const owner: string = await ContractManager.contract.owner();
 
-        return ContractManager.formatAddressWithChecksum(userAddress) === owner;
-    }
-
-    static formatAddressWithChecksum(address: string) {
-        return ethers.utils.getAddress(address);
+        return formatAddressWithChecksum(userAddress) === owner;
     }
 }
 

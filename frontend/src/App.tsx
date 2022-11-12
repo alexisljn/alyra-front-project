@@ -1,12 +1,19 @@
 import React, {createContext, useCallback, useEffect, useState} from 'react';
 import './App.css';
 import Header from "./components/Header";
-import {DEFAULT_ADDRESS, getLastUsedAddress, saveAddressInLocalStorage} from "./Util";
+import {
+    DEFAULT_ADDRESS,
+    getLastUsedAddress,
+    isChainIdCorrect,
+    saveAddressInLocalStorage
+} from "./Util";
 import {ContractManager} from "./managers/ContractManager";
+import {ethers} from "ethers";
 
 interface UserContext {
     isLogged: boolean
     address: string
+    chainId: number
     isAdmin: boolean
     toggleIsLogged: () => void,
     changeAddress: (address: string) => void,
@@ -15,6 +22,7 @@ interface UserContext {
 const UserContext = createContext<UserContext>({
     isLogged: false,
     address: '',
+    chainId: 0,
     isAdmin: false,
     toggleIsLogged: () => {},
     changeAddress: () => {}
@@ -24,74 +32,114 @@ function App() {
 
     const [isLogged, setIsLogged] = useState(false);
 
-    const [address, setIsAddress] = useState("");
+    const [address, setAddress] = useState("");
 
     const [isAdmin, setIsAdmin] = useState(false);
+
+    const [chainId, setChainId] = useState(0);
+
+    const [isLoading, setIsLoading] = useState(true);
 
     const toggleIsLogged = useCallback(() => {
         setIsLogged(isLogged => !isLogged);
     }, []);
 
-    const changeAddress = useCallback(async (address: string) => {
-        setIsAddress(address);
-
-        setIsAdmin(await ContractManager.isCurrentUserOwner(address));
-
-        if (address !== DEFAULT_ADDRESS) {
-            saveAddressInLocalStorage(address);
-        }
-
+    const changeAddress = useCallback((address: string) => {
+        setAddress(address);
     }, []);
 
     const handleAutoLogin = useCallback(async () => {
         const lastUsedAddress = getLastUsedAddress();
 
         if (lastUsedAddress !== DEFAULT_ADDRESS) {
-
-            await changeAddress(lastUsedAddress);
+            setAddress(lastUsedAddress);
 
             toggleIsLogged();
         }
     }, [])
 
+    const initialization = useCallback(async () => {
+        const {chainId} = await ContractManager.provider.getNetwork()
+
+        setChainId(chainId);
+
+        if (isChainIdCorrect(chainId)) {
+            await ContractManager.attachToContract();
+        } else {
+            throw new Error("Bad network") //TODO
+        }
+
+        await handleAutoLogin();
+    }, []);
+
     useEffect(() => {
         (async () => {
             if (window.hasOwnProperty('ethereum')) {
-
                 ContractManager.setProvider()
 
                 try {
-                    await ContractManager.attachToContract();
-
-                    await handleAutoLogin();
-
+                    await initialization()
                 } catch (error) {
-                    alert('Couldn\'t connect to contract');
+                    alert('Couldn\'t connect to contract'); //TODO reseau
 
                     console.error(error);
                 }
 
-                // events disconnect chainChanged accountsChanged
-                window.ethereum.on('chainChanged', (e) => {
-                    console.log(e) // e = chainId en hex
-                    //TODO les appels onChain ne marcheront plus
+                window.ethereum.on('chainChanged', (chainId: any) => {
+                    setChainId(parseInt(ethers.BigNumber.from(chainId).toString()));
                 });
 
-                window.ethereum.on("accountsChanged", async (accounts: any) => {
+                window.ethereum.on("accountsChanged", (accounts: any) => {
                     if (accounts[0] && typeof accounts[0] === "string") {
-                        await changeAddress(accounts[0]);
+                        setAddress(accounts[0]);
                     }
                 });
+
+                setIsLoading(false);
             }
         })();
     }, []);
 
+    useEffect(() => {
+        if (isLoading) return; /* Initialization Guard */
+
+        (async () => {
+            if (isChainIdCorrect(chainId)) {
+                await ContractManager.attachToContract();
+
+                setIsAdmin(await ContractManager.isCurrentUserOwner(address));
+
+                return;
+            }
+
+            ContractManager.resetContract();
+
+            setIsAdmin(false);
+
+            //TODO alert pour dire d'être sur le bon reseau
+        })();
+    }, [chainId]);
+
+    useEffect(() => {
+        if (isLoading) return; /* Initialization Guard */
+
+        (async () => {
+            saveAddressInLocalStorage(address);
+
+            isChainIdCorrect(chainId)
+                ? setIsAdmin(await ContractManager.isCurrentUserOwner(address))
+                : setIsAdmin(false)
+            ;
+        })();
+    }, [address])
+
     return(
         <>
-            <UserContext.Provider value={{isLogged, toggleIsLogged, address, changeAddress, isAdmin}}>
+            <UserContext.Provider value={{isLogged, toggleIsLogged, address, changeAddress, isAdmin, chainId}}>
                 <Header/>
+                <p>Is admin {isAdmin.toString()}</p>
                 <div className="container-fluid">
-                <button className="btn btn-lg btn-primary">Test</button>
+                    <button className="btn btn-lg btn-primary">Test</button>
                 </div>
             </UserContext.Provider>
         </>
