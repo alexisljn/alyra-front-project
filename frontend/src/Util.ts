@@ -9,6 +9,8 @@ interface LocalStorageItem {
 }
 
 function saveAddressInLocalStorage(address: string) {
+    if (address == DEFAULT_ADDRESS) return;
+
     const savedAddresses: string | null = window.localStorage.getItem(ADDRESSES_LABEL);
 
     const timestamp: number = Date.now();
