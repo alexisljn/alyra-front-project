@@ -1,8 +1,14 @@
 import React, {createContext, useCallback, useEffect, useState} from 'react';
 import './App.css';
 import Header from "./components/Header";
-import {DEFAULT_ADDRESS, getLastUsedAddress, saveAddressInLocalStorage} from "./Util";
+import {
+    DEFAULT_ADDRESS,
+    getLastUsedAddress,
+    isChainIdCorrect,
+    saveAddressInLocalStorage
+} from "./Util";
 import {ContractManager} from "./managers/ContractManager";
+import {ethers} from "ethers";
 
 interface UserContext {
     isLogged: boolean
@@ -76,6 +82,19 @@ function App() {
             }
         })();
     }, []);
+
+    useEffect(() => {
+        if (isLoading) return; /* Initialization Guard */
+
+        (async () => {
+            saveAddressInLocalStorage(address);
+
+            isChainIdCorrect(chainId)
+                ? setIsAdmin(await ContractManager.isCurrentUserOwner(address))
+                : setIsAdmin(false)
+            ;
+        })();
+    }, [address])
 
     return(
         <>
