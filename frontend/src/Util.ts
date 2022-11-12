@@ -77,6 +77,15 @@ function isChainIdCorrect(chainId: number): boolean {
     return chainId === Number(process.env.REACT_APP_CHAIN_ID)
 }
 
+function getChainIdName(chainId: number): string|null {
+    switch (chainId) {
+        case 5: return 'Goerli';
+
+        case 31337: return 'Localhost';
+
+        default: return null
+    }
+}
 
 function formatAddressWithChecksum(address: string) {
     return ethers.utils.getAddress(address);
@@ -88,6 +97,7 @@ export {
     removeAddressFromLocalStorage,
     getLastUsedAddress,
     isChainIdCorrect,
+    getChainIdName,
     formatAddressWithChecksum,
     DEFAULT_ADDRESS
 }
