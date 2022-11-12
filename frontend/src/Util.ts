@@ -73,6 +73,10 @@ function getLastUsedAddress() {
     return lastUsedAddress;
 }
 
+function isChainIdCorrect(chainId: number): boolean {
+    return chainId === Number(process.env.REACT_APP_CHAIN_ID)
+}
+
 
 function formatAddressWithChecksum(address: string) {
     return ethers.utils.getAddress(address);
@@ -83,6 +87,7 @@ export {
     saveAddressInLocalStorage,
     removeAddressFromLocalStorage,
     getLastUsedAddress,
+    isChainIdCorrect,
     formatAddressWithChecksum,
     DEFAULT_ADDRESS
 }
