@@ -58,18 +58,29 @@ function App() {
         }
     }, [])
 
+    const initialization = useCallback(async () => {
+        const {chainId} = await ContractManager.provider.getNetwork()
+
+        setChainId(chainId);
+
+        if (isChainIdCorrect(chainId)) {
+            await ContractManager.attachToContract();
+        } else {
+            throw new Error("Bad network") //TODO
+        }
+
+        await handleAutoLogin();
+    }, []);
+
     useEffect(() => {
         (async () => {
             if (window.hasOwnProperty('ethereum')) {
                 ContractManager.setProvider()
 
                 try {
-                    await ContractManager.attachToContract();
-
-                    await handleAutoLogin();
-
+                    await initialization()
                 } catch (error) {
-                    alert('Couldn\'t connect to contract');
+                    alert('Couldn\'t connect to contract'); //TODO reseau
 
                     console.error(error);
                 }
