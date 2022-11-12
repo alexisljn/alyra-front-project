@@ -1,5 +1,5 @@
 import {Contract, ethers, providers} from "ethers";
-import {DEFAULT_ADDRESS} from "../Util";
+import {DEFAULT_ADDRESS, formatAddressWithChecksum} from "../Util";
 
 class ContractManager {
 
@@ -34,11 +34,7 @@ class ContractManager {
 
         const owner: string = await ContractManager.contract.owner();
 
-        return ContractManager.formatAddressWithChecksum(userAddress) === owner;
-    }
-
-    static formatAddressWithChecksum(address: string) {
-        return ethers.utils.getAddress(address);
+        return formatAddressWithChecksum(userAddress) === owner;
     }
 }
 

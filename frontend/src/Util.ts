@@ -69,4 +69,16 @@ function getLastUsedAddress() {
     return lastUsedAddress;
 }
 
-export { saveAddressInLocalStorage, removeAddressFromLocalStorage, getLastUsedAddress, DEFAULT_ADDRESS }
+
+function formatAddressWithChecksum(address: string) {
+    return ethers.utils.getAddress(address);
+}
+
+
+export {
+    saveAddressInLocalStorage,
+    removeAddressFromLocalStorage,
+    getLastUsedAddress,
+    formatAddressWithChecksum,
+    DEFAULT_ADDRESS
+}
