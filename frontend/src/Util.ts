@@ -1,3 +1,5 @@
+import {ethers} from "ethers";
+
 const ADDRESSES_LABEL: string = 'addresses';
 
 const DEFAULT_ADDRESS: string = '0x';
@@ -14,14 +16,14 @@ function saveAddressInLocalStorage(address: string) {
     if (savedAddresses !== null) {
         const savedAddressesObject: LocalStorageItem = JSON.parse(savedAddresses);
 
-        savedAddressesObject[address] = timestamp;
+        savedAddressesObject[formatAddressWithChecksum(address)] = timestamp;
 
         window.localStorage.setItem(ADDRESSES_LABEL, JSON.stringify(savedAddressesObject))
 
         return;
     }
 
-    window.localStorage.setItem(ADDRESSES_LABEL, JSON.stringify({[address]: timestamp}));
+    window.localStorage.setItem(ADDRESSES_LABEL, JSON.stringify({[formatAddressWithChecksum(address)]: timestamp}));
 }
 
 function removeAddressFromLocalStorage(address: string) {
@@ -31,9 +33,9 @@ function removeAddressFromLocalStorage(address: string) {
 
         const savedAddressesObject: LocalStorageItem = JSON.parse(savedAddresses);
 
-        if (savedAddressesObject[address]) {
+        if (savedAddressesObject[formatAddressWithChecksum(address)]) {
 
-            delete savedAddressesObject[address];
+            delete savedAddressesObject[formatAddressWithChecksum(address)];
 
             Object.keys(savedAddressesObject).length > 0
                 ? window.localStorage.setItem(ADDRESSES_LABEL, JSON.stringify(savedAddressesObject))
