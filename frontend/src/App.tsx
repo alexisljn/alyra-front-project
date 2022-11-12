@@ -137,8 +137,9 @@ function App() {
         <>
             <UserContext.Provider value={{isLogged, toggleIsLogged, address, changeAddress, isAdmin, chainId}}>
                 <Header/>
+                <p>Is admin {isAdmin.toString()}</p>
                 <div className="container-fluid">
-                <button className="btn btn-lg btn-primary">Test</button>
+                    <button className="btn btn-lg btn-primary">Test</button>
                 </div>
             </UserContext.Provider>
         </>
