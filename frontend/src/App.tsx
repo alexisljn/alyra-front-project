@@ -38,6 +38,8 @@ function App() {
 
     const [chainId, setChainId] = useState(0);
 
+    const [isLoading, setIsLoading] = useState(true);
+
     const toggleIsLogged = useCallback(() => {
         setIsLogged(isLogged => !isLogged);
     }, []);
@@ -81,6 +83,8 @@ function App() {
                         setAddress(accounts[0]);
                     }
                 });
+
+                setIsLoading(false);
             }
         })();
     }, []);
