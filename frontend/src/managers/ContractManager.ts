@@ -5,7 +5,7 @@ class ContractManager {
 
     static provider: providers.Web3Provider;
 
-    static contract: Contract;
+    static contract: Contract | null;
 
     static setProvider() {
         ContractManager.provider = new providers.Web3Provider(window.ethereum);
@@ -27,8 +27,13 @@ class ContractManager {
         )
     }
 
+    static resetContract() {
+        ContractManager.contract = null;
+    }
+
     static async isCurrentUserOwner(userAddress: string) {
-        if (userAddress === DEFAULT_ADDRESS) {
+        //TODO si bon chainId sinon false
+        if (userAddress === DEFAULT_ADDRESS || !ContractManager.contract) {
             return false;
         }
 
