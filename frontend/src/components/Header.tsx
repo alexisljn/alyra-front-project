@@ -5,7 +5,7 @@ import {ContractManager} from "../managers/ContractManager";
 import {Link} from "react-router-dom";
 
 function Header() {
-    const {isLogged, changeAddress, address, toggleIsLogged} = useContext(UserContext);
+    const {isLogged, changeAddress, address, toggleIsLogged, isAdmin} = useContext(UserContext);
 
     const connectWallet =  async () => {
         if (ContractManager.provider) {
@@ -42,6 +42,13 @@ function Header() {
                         <Link to={`/`} className="nav-link">Home</Link>
                         {/*<a className="nav-link active" aria-current="page" href="#">Home</a>*/}
                     </li>
+                    {isAdmin &&
+                        <li className="nav-item">
+                            <Link to={`admin`} className="nav-link">Admin</Link>
+                            {/*<a className="nav-link active" aria-current="page" href="#">Admin</a>*/}
+                        </li>
+                    }
+                </ul>
                 {!isLogged
                     ?
                         <button className="btn btn-primary" onClick={connectWallet}>Connect wallet</button>
