@@ -33,7 +33,7 @@ function Header() {
     }
 
     return (
-        <nav className="navbar bg-light">
+        <nav className="navbar bg-light navbar-expand-lg">
             <div className="container-fluid">
                 <a href="#" className="navbar-brand">Voting App</a>
                 {!isLogged
