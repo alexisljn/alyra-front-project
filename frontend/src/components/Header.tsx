@@ -2,6 +2,7 @@ import React, {useContext} from "react";
 import {UserContext} from "../App";
 import {DEFAULT_ADDRESS, removeAddressFromLocalStorage} from "../Util";
 import {ContractManager} from "../managers/ContractManager";
+import {Link} from "react-router-dom";
 
 function Header() {
     const {isLogged, changeAddress, address, toggleIsLogged} = useContext(UserContext);
@@ -36,6 +37,11 @@ function Header() {
         <nav className="navbar bg-light navbar-expand-lg">
             <div className="container-fluid">
                 <a href="#" className="navbar-brand">Voting App</a>
+                <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li className="nav-item">
+                        <Link to={`/`} className="nav-link">Home</Link>
+                        {/*<a className="nav-link active" aria-current="page" href="#">Home</a>*/}
+                    </li>
                 {!isLogged
                     ?
                         <button className="btn btn-primary" onClick={connectWallet}>Connect wallet</button>
