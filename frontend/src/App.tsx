@@ -9,6 +9,10 @@ import {
 } from "./Util";
 import {ContractManager} from "./managers/ContractManager";
 import {ethers} from "ethers";
+import {Route, Routes} from "react-router-dom";
+import Home from "./components/Home";
+import AdminPanel from "./components/AdminPanel";
+import ErrorPage from "./components/ErrorPage";
 
 interface UserContext {
     isLogged: boolean
@@ -137,9 +141,12 @@ function App() {
         <>
             <UserContext.Provider value={{isLogged, toggleIsLogged, address, changeAddress, isAdmin, chainId}}>
                 <Header/>
-                <p>Is admin {isAdmin.toString()}</p>
                 <div className="container-fluid">
-                    <button className="btn btn-lg btn-primary">Test</button>
+                    <Routes>
+                        <Route path="/" element={<Home/>}/>
+                        <Route path="admin" element={<AdminPanel/>}/>
+                        <Route path="*" element={<ErrorPage/>}/>
+                    </Routes>
                 </div>
             </UserContext.Provider>
         </>
