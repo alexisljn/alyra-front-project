@@ -1,5 +1,6 @@
 import {Contract, ethers, providers} from "ethers";
 import {DEFAULT_ADDRESS, formatAddressWithChecksum} from "../Util";
+import {handleAccountsChanged, handleChainChanged, handleWorkflowStatusChange} from "../EventHandlers";
 
 class ContractManager {
 
@@ -7,8 +8,10 @@ class ContractManager {
 
     static contract: Contract | null;
 
-    static setProvider() {
+    static initiateProvider() {
         ContractManager.provider = new providers.Web3Provider(window.ethereum);
+
+        ContractManager.listenProviderEvents();
     }
 
     static async getAbi() {
@@ -41,6 +44,27 @@ class ContractManager {
 
         return formatAddressWithChecksum(userAddress) === owner;
     }
+
+    static async getVotingStatus(): Promise<number | null> {
+        if (ContractManager.contract) {
+            return await ContractManager.contract.workflowStatus();
+        }
+
+        return null;
+    }
+
+    static listenProviderEvents() {
+        window.ethereum.on('chainChanged', handleChainChanged);
+
+        window.ethereum.on("accountsChanged", handleAccountsChanged);
+    }
+
+    static cleanProviderEvents() {
+        window.ethereum.off('chainChanged', handleChainChanged);
+
+        window.ethereum.off("accountsChanged", handleAccountsChanged);
+    }
+
 }
 
 export {ContractManager};
