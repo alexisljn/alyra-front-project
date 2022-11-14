@@ -28,9 +28,13 @@ class ContractManager {
             await ContractManager.getAbi(),
             ContractManager.provider
         )
+
+        ContractManager.listenContractEvents();
     }
 
     static resetContract() {
+        ContractManager.cleanContractEvents();
+
         ContractManager.contract = null;
     }
 
@@ -65,6 +69,19 @@ class ContractManager {
         window.ethereum.off("accountsChanged", handleAccountsChanged);
     }
 
+    static listenContractEvents() {
+        ContractManager.contract!.on('WorkflowStatusChange', handleWorkflowStatusChange);
+    }
+
+    static cleanContractEvents() {
+        ContractManager.contract!.off('WorkflowStatusChange', handleWorkflowStatusChange);
+    }
+
+    static cleanEvents() {
+        ContractManager.cleanProviderEvents();
+
+        ContractManager.cleanContractEvents();
+    }
 }
 
 export {ContractManager};
