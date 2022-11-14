@@ -8,11 +8,11 @@ import {
     saveAddressInLocalStorage
 } from "./Util";
 import {ContractManager} from "./managers/ContractManager";
-import {ethers} from "ethers";
 import {Route, Routes} from "react-router-dom";
 import Home from "./components/Home";
 import AdminPanel from "./components/AdminPanel";
 import ErrorPage from "./components/ErrorPage";
+import {CONTRACT_EVENT, PROVIDER_EVENT} from "./EventHandlers";
 
 interface UserContext {
     isLogged: boolean
@@ -72,14 +72,29 @@ function App() {
         } else {
             throw new Error("Bad network") //TODO
         }
+    }, []);
 
-        await handleAutoLogin();
+    const handleProviderEvents = useCallback((e: any) => {
+        switch (e.detail.type) {
+            case 'chainChanged':
+                setChainId(e.detail.value);
+                break;
+            case 'accountsChanged':
+                setAddress(e.detail.value);
+                break;
+        }
+    }, []);
+
+    const handleContractEvents = useCallback((e: any) => {
+        switch (e.detail.type) {
+
+        }
     }, []);
 
     useEffect(() => {
         (async () => {
             if (window.hasOwnProperty('ethereum')) {
-                ContractManager.setProvider()
+                ContractManager.initiateProvider()
 
                 try {
                     await initialization()
@@ -89,19 +104,21 @@ function App() {
                     console.error(error);
                 }
 
-                window.ethereum.on('chainChanged', (chainId: any) => {
-                    setChainId(parseInt(ethers.BigNumber.from(chainId).toString()));
-                });
+                window.addEventListener(PROVIDER_EVENT, handleProviderEvents);
 
-                window.ethereum.on("accountsChanged", (accounts: any) => {
-                    if (accounts[0] && typeof accounts[0] === "string") {
-                        setAddress(accounts[0]);
-                    }
-                });
+                window.addEventListener(CONTRACT_EVENT, handleContractEvents);
 
                 setIsLoading(false);
             }
         })();
+
+        return () => {
+            window.removeEventListener(PROVIDER_EVENT, handleProviderEvents);
+
+            window.removeEventListener(CONTRACT_EVENT, handleContractEvents);
+
+            ContractManager.cleanEvents();
+        }
     }, []);
 
     useEffect(() => {
