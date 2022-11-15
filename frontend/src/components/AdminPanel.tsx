@@ -1,5 +1,8 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useCallback, useContext, useEffect, useState} from "react";
 import {UserContext} from "../App";
+import {getNextVotingStatus, isChainIdCorrect, mappingBetweenStatusAndLabels} from "../Util";
+import {ContractManager} from "../managers/ContractManager";
+import LoadingModal from "./LoadingModal";
 
 function AdminPanel() {
     // Recup statut du contrat
@@ -18,6 +21,24 @@ function AdminPanel() {
         toggleDisplayTransactionLoadingModal
     } = useContext(UserContext);
 
+    const changeVotingStatus = useCallback(async (status: number) => {
+        try {
+
+            if (status != getNextVotingStatus(votingStatus!)) {
+                throw new Error('Invalid voting status')
+            }
+
+            if (ContractManager.contract) {
+                await ContractManager.changeVotingStatus(status);
+
+                toggleDisplayTransactionLoadingModal();
+            } //TODO throw si non dispo
+
+        } catch (error) {
+            console.log("trigger si revert ") // OUI ! TODO
+            console.error(error);
+        }
+    }, [votingStatus]);
 
     useEffect(() => {
         if (!isAdmin) {
