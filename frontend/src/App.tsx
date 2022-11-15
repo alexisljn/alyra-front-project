@@ -25,7 +25,7 @@ interface UserContext {
 
 const UserContext = createContext<UserContext>({
     isLogged: false,
-    address: '',
+    address: DEFAULT_ADDRESS,
     chainId: 0,
     isAdmin: false,
     toggleIsLogged: () => {},
@@ -36,7 +36,7 @@ function App() {
 
     const [isLogged, setIsLogged] = useState(false);
 
-    const [address, setAddress] = useState("");
+    const [address, setAddress] = useState(DEFAULT_ADDRESS);
 
     const [isAdmin, setIsAdmin] = useState(false);
 
