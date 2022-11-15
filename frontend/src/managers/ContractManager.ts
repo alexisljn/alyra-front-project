@@ -1,5 +1,5 @@
 import {Contract, ethers, providers} from "ethers";
-import {DEFAULT_ADDRESS, formatAddressWithChecksum} from "../Util";
+import {DEFAULT_ADDRESS, formatAddressWithChecksum, mappingBetweenStatusAndLabels} from "../Util";
 import {handleAccountsChanged, handleChainChanged, handleWorkflowStatusChange} from "../EventHandlers";
 
 class ContractManager {
@@ -55,6 +55,14 @@ class ContractManager {
         }
 
         return null;
+    }
+
+    static async changeVotingStatus(status: number) {
+        const signer = ContractManager.provider.getSigner();
+
+        const contractWithSigner = ContractManager.contract!.connect(signer);
+
+        await contractWithSigner[mappingBetweenStatusAndLabels[status].functionName!]()
     }
 
     static listenProviderEvents() {
