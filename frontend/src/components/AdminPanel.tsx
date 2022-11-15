@@ -49,6 +49,12 @@ function AdminPanel() {
         setIsLoading(false);
     }, []);
 
+    useEffect(() => {
+        if (!isAdmin) {
+            window.location.href = '/unauthorized';
+            return;
+        }
+    }, [isAdmin])
 
     return (
         isLoading
