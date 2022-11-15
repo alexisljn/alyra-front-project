@@ -19,8 +19,9 @@ interface UserContext {
     address: string
     chainId: number
     isAdmin: boolean
-    toggleIsLogged: () => void,
-    changeAddress: (address: string) => void,
+    votingStatus: number | null
+    toggleIsLogged: () => void
+    changeAddress: (address: string) => void
 }
 
 const UserContext = createContext<UserContext>({
@@ -28,8 +29,9 @@ const UserContext = createContext<UserContext>({
     address: DEFAULT_ADDRESS,
     chainId: 0,
     isAdmin: false,
+    votingStatus: null,
     toggleIsLogged: () => {},
-    changeAddress: () => {}
+    changeAddress: () => {},
 });
 
 function App() {
@@ -43,6 +45,8 @@ function App() {
     const [chainId, setChainId] = useState(0);
 
     const [isLoading, setIsLoading] = useState(true);
+
+    const [votingStatus, setVotingStatus] = useState<number | null>(null);
 
     const toggleIsLogged = useCallback(() => {
         setIsLogged(isLogged => !isLogged);
