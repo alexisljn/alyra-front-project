@@ -109,7 +109,14 @@ function App() {
 
     const handleContractEvents = useCallback((e: any) => {
         switch (e.detail.type) {
+            case 'workflowStatusChange':
+                const {newStatus} = e.detail.value;
 
+                setVotingStatus(newStatus);
+
+                setDisplayTransactionLoadingModal(false);
+
+                break;
         }
     }, []);
 
