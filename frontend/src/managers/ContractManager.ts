@@ -39,7 +39,6 @@ class ContractManager {
     }
 
     static async isCurrentUserOwner(userAddress: string) {
-        //TODO si bon chainId sinon false
         if (userAddress === DEFAULT_ADDRESS || !ContractManager.contract) {
             return false;
         }
