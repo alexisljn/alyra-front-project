@@ -64,6 +64,20 @@ class ContractManager {
         await contractWithSigner[mappingBetweenStatusAndLabels[status].functionName!]()
     }
 
+    static async addVoter(address: string) {
+        const signer = ContractManager.provider.getSigner();
+
+        const contractWithSigner = ContractManager.contract!.connect(signer);
+
+        await contractWithSigner.addVoter(address);
+    }
+
+    static async getVoter(address: string) {
+        if (ContractManager.contract) {
+            return await ContractManager.contract.getVoter(address);
+        }
+    }
+
     static listenProviderEvents() {
         window.ethereum.on('chainChanged', handleChainChanged);
 
