@@ -139,21 +139,26 @@ function App() {
         if (isLoading) return; /* Initialization Guard */
 
         (async () => {
-            if (isChainIdCorrect(chainId)) {
-                await ContractManager.attachToContract();
+            try {
+                if (isChainIdCorrect(chainId)) {
+                    await ContractManager.attachToContract();
 
-                setVotingStatus(await ContractManager.getVotingStatus());
+                    setVotingStatus(await ContractManager.getVotingStatus());
 
-                setIsAdmin(await ContractManager.isCurrentUserOwner(address));
+                    setIsAdmin(await ContractManager.isCurrentUserOwner(address));
 
-                return;
+                    return;
+                }
+
+                ContractManager.resetContract();
+
+                setIsAdmin(false);
+
+                fireToast('warning', `You need to switch network`);
+            } catch (error) {
+                fireToast('error', 'Something went wrong');
             }
 
-            ContractManager.resetContract();
-
-            setIsAdmin(false);
-
-            //TODO alert pour dire d'être sur le bon reseau
         })();
     }, [chainId]);
 
