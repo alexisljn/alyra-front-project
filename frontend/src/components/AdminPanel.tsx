@@ -1,6 +1,13 @@
-import React, {useCallback, useContext, useEffect, useState} from "react";
+import React, {useCallback, useContext, useEffect, useRef, useState} from "react";
 import {UserContext} from "../App";
-import {getNextVotingStatus, isChainIdCorrect, mappingBetweenStatusAndLabels} from "../Util";
+import {
+    fireToast,
+    formatAddressWithChecksum,
+    getNextVotingStatus,
+    isChainIdCorrect,
+    mappingBetweenStatusAndLabels,
+    VotingStatus
+} from "../Util";
 import {ContractManager} from "../managers/ContractManager";
 import LoadingModal from "./LoadingModal";
 import {Spinner} from "react-bootstrap";
@@ -10,6 +17,8 @@ function AdminPanel() {
     const [isLoading, setIsLoading] = useState(true);
 
     const [showLoadingModal, setShowLoadingModal] = useState(false);
+
+    const addVoterInputRef = useRef<HTMLInputElement>(null);
 
     const {
         isAdmin,
@@ -44,6 +53,38 @@ function AdminPanel() {
         }
     }, [votingStatus]);
 
+    const addVoter = useCallback(async () => {
+        if (addVoterInputRef.current) {
+            try {
+                const address = formatAddressWithChecksum(addVoterInputRef.current.value);
+
+                if (ContractManager.contract) {
+                    await ContractManager.addVoter(address)
+
+                    setShowLoadingModal(true);
+                }
+
+                throw new Error();
+
+            } catch (error: Error | any) {
+                if (error.hasOwnProperty('error')) {
+                    fireToast('error', error.error.data.message);
+
+                    return;
+                }
+
+                if (error.message.includes('invalid address')) {
+                    fireToast('error', `Error ! ${addVoterInputRef.current.value} is not a valid address`);
+
+                    return;
+                }
+
+                fireToast('error', 'Error ! Something went wrong');
+            }
+        }
+
+    }, []);
+
     useEffect(() => {
         if (!isAdmin) {
             window.location.href = '/not-found';
@@ -71,25 +112,45 @@ function AdminPanel() {
                     {showLoadingModal && <LoadingModal showModal={showLoadingModal} closeModal={closeModal}/>}
                     <div>
                         <h2>Admin panel</h2>
-                        {isChainIdCorrect(chainId)
-                            ?
+                        {isChainIdCorrect(chainId) &&
                             <div>
                                 <p>Current voting status : {mappingBetweenStatusAndLabels[votingStatus!].label}</p>
-                                <p>Change voting status</p>
-                                {Object.entries(mappingBetweenStatusAndLabels).map(([availableStatus, statusData]) => {
-                                    return <button key={availableStatus}
-                                                   className="btn btn-sm mx-2 btn-primary"
-                                                   disabled={Number(availableStatus) !== getNextVotingStatus(votingStatus!)}
-                                                   onClick={() => changeVotingStatus(Number(availableStatus))}
-                                    >
-                                        {statusData.label}
-                                    </button>
-                                })}
+                                <div className="mt-3">
+                                    <h4>Change voting status</h4>
+                                    <div className="mt-4">
+                                        {Object.entries(mappingBetweenStatusAndLabels).map(([availableStatus, statusData]) => {
+                                            return <button key={availableStatus}
+                                                           className="btn btn-sm mx-2 btn-primary"
+                                                           disabled={Number(availableStatus) !== getNextVotingStatus(votingStatus!)}
+                                                           onClick={() => changeVotingStatus(Number(availableStatus))}
+                                            >
+                                                {statusData.label}
+                                            </button>
+                                        })}
+                                    </div>
+                                </div>
+                                <div className="mt-4">
+                                    <h4>Add voter</h4>
+                                    {votingStatus === VotingStatus.RegisteringVoters
+                                        ?
+                                            <div className="d-flex align-items-end">
+                                                <div className="mx-2 col-4">
+                                                    <label htmlFor="add-voter-input" className="form-label">Address</label>
+                                                    <input id="add-voter-input"
+                                                           type="text"
+                                                           className="form-control"
+                                                           placeholder="0x..."
+                                                           ref={addVoterInputRef}
+                                                    />
+                                                </div>
+                                                <button className="btn btn-primary" onClick={addVoter}>Add</button>
+                                            </div>
+                                        :
+                                        <p>You can't add voters anymore</p>
+                                    }
+                                </div>
                             </div>
-
-                            : <p>Change network pls</p> /*TODO*/
                         }
-
                     </div>
                 </>
 
