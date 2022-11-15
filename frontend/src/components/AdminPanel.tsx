@@ -62,6 +62,32 @@ function AdminPanel() {
                 <div className="d-flex justify-content-center">
                     <Spinner animation="border"></Spinner>
                 </div>
+            :
+                <>
+                    {displayTransactionLoadingModal && <LoadingModal/>}
+                    <div>
+                        <h2>Admin panel</h2>
+                        {isChainIdCorrect(chainId)
+                            ?
+                            <div>
+                                <p>Current voting status : {mappingBetweenStatusAndLabels[votingStatus!].label}</p>
+                                <p>Change voting status</p>
+                                {Object.entries(mappingBetweenStatusAndLabels).map(([availableStatus, statusData]) => {
+                                    return <button key={availableStatus}
+                                                   className="btn btn-sm mx-2 btn-primary"
+                                                   disabled={Number(availableStatus) !== getNextVotingStatus(votingStatus!)}
+                                                   onClick={() => changeVotingStatus(Number(availableStatus))}
+                                    >
+                                        {statusData.label}
+                                    </button>
+                                })}
+                            </div>
+
+                            : <p>Change network pls</p> /*TODO*/
+                        }
+
+                    </div>
+                </>
 
     )
 }
