@@ -52,7 +52,7 @@ function App() {
         setAddress(address);
     }, []);
 
-    const handleAutoLogin = useCallback(async () => {
+    const handleAutoLogin = useCallback(async (): Promise<string> => {
         const lastUsedAddress = getLastUsedAddress();
 
         if (lastUsedAddress !== DEFAULT_ADDRESS) {
@@ -60,15 +60,21 @@ function App() {
 
             toggleIsLogged();
         }
+
+        return lastUsedAddress;
     }, [])
 
     const initialization = useCallback(async () => {
+        const lastUsedAddress = await handleAutoLogin();
+
         const {chainId} = await ContractManager.provider.getNetwork()
 
         setChainId(chainId);
 
         if (isChainIdCorrect(chainId)) {
             await ContractManager.attachToContract();
+
+            setIsAdmin(await ContractManager.isCurrentUserOwner(lastUsedAddress));
         } else {
             throw new Error("Bad network") //TODO
         }
