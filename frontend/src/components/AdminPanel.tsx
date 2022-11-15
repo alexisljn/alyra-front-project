@@ -9,13 +9,17 @@ function AdminPanel() {
 
     const [isLoading, setIsLoading] = useState(true);
 
+    const [showLoadingModal, setShowLoadingModal] = useState(false);
+
     const {
         isAdmin,
         votingStatus,
         chainId,
-        displayTransactionLoadingModal,
-        toggleDisplayTransactionLoadingModal
     } = useContext(UserContext);
+
+    const closeModal = useCallback(() => {
+        setShowLoadingModal(false);
+    }, []);
 
     const changeVotingStatus = useCallback(async (status: number) => {
         try {
@@ -27,7 +31,7 @@ function AdminPanel() {
             if (ContractManager.contract) {
                 await ContractManager.changeVotingStatus(status);
 
-                toggleDisplayTransactionLoadingModal();
+                setShowLoadingModal(true);
 
                 return
             }
@@ -64,7 +68,7 @@ function AdminPanel() {
                 </div>
             :
                 <>
-                    {displayTransactionLoadingModal && <LoadingModal/>}
+                    {showLoadingModal && <LoadingModal showModal={showLoadingModal} closeModal={closeModal}/>}
                     <div>
                         <h2>Admin panel</h2>
                         {isChainIdCorrect(chainId)
