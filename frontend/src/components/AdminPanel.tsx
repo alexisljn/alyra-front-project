@@ -90,13 +90,44 @@ function AdminPanel() {
 
     }, []);
 
+    const handleLocalEvents = useCallback((e: any) => {
+        switch (e.type) {
+            case 'voterRegistrationSuccess':
+                closeModal();
+
+                fireToast('success', `Success ! ${e.detail.value} has been added as a voter`);
+
+                break;
+            case 'votingStatusChangeSuccess':
+                closeModal();
+
+                const oldStatus = mappingBetweenStatusAndLabels[e.detail.value.oldStatus].label;
+
+                const newStatus = mappingBetweenStatusAndLabels[e.detail.value.newStatus].label;
+
+                fireToast('success', `Success ! status change from ${oldStatus} to ${newStatus}`);
+
+                break;
+        }
+    }, []);
+
     useEffect(() => {
         if (!isAdmin) {
             window.location.href = '/not-found';
             return;
         }
 
+        window.addEventListener('voterRegistrationSuccess', handleLocalEvents);
+
+        window.addEventListener('votingStatusChangeSuccess', handleLocalEvents);
+
         setIsLoading(false);
+
+        return () => {
+            window.removeEventListener('voterRegistrationSuccess', handleLocalEvents);
+
+            window.removeEventListener('votingStatusChangeSuccess', handleLocalEvents);
+        }
     }, []);
 
     useEffect(() => {
