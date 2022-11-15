@@ -3,13 +3,9 @@ import {UserContext} from "../App";
 import {getNextVotingStatus, isChainIdCorrect, mappingBetweenStatusAndLabels} from "../Util";
 import {ContractManager} from "../managers/ContractManager";
 import LoadingModal from "./LoadingModal";
+import {Spinner} from "react-bootstrap";
 
 function AdminPanel() {
-    // Recup statut du contrat
-    // Conditionner affichage et fonctionnement des features selon
-    // Changement statut :
-    // - Créer mapping chronologie des actions
-    // - Griser les invalides
 
     const [isLoading, setIsLoading] = useState(true);
 
@@ -62,10 +58,9 @@ function AdminPanel() {
 
     return (
         isLoading
-            ? <div></div>
-            :
-                <div>
-                    <h2>Admin panel</h2>
+            ?
+                <div className="d-flex justify-content-center">
+                    <Spinner animation="border"></Spinner>
                 </div>
 
     )
