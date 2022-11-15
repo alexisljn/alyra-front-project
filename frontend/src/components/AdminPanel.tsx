@@ -10,7 +10,14 @@ function AdminPanel() {
 
     const [isLoading, setIsLoading] = useState(true);
 
-    const {isAdmin, votingStatus, changeVotingStatus} = useContext(UserContext);
+    const {
+        isAdmin,
+        votingStatus,
+        chainId,
+        displayTransactionLoadingModal,
+        toggleDisplayTransactionLoadingModal
+    } = useContext(UserContext);
+
 
     useEffect(() => {
         if (!isAdmin) {
