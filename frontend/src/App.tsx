@@ -13,6 +13,7 @@ import Home from "./components/Home";
 import AdminPanel from "./components/AdminPanel";
 import ErrorPage from "./components/ErrorPage";
 import {CONTRACT_EVENT, PROVIDER_EVENT} from "./EventHandlers";
+import Proposals from "./components/Proposals";
 
 interface UserContext {
     isLogged: boolean
@@ -188,6 +189,7 @@ function App() {
                     {!isLoading &&
                         <Routes>
                             <Route path="/" element={<Home/>}/>
+                            <Route path="proposals" element={<Proposals/>}/>
                             <Route path="admin" element={<AdminPanel/>}/>
                             <Route path="*" element={<ErrorPage/>}/>
                         </Routes>
