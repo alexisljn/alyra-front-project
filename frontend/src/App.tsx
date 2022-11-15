@@ -164,12 +164,14 @@ function App() {
         <>
             <UserContext.Provider value={{isLogged, toggleIsLogged, address, changeAddress, isAdmin, chainId}}>
                 <Header/>
-                <div className="container-fluid">
-                    <Routes>
-                        <Route path="/" element={<Home/>}/>
-                        <Route path="admin" element={<AdminPanel/>}/>
-                        <Route path="*" element={<ErrorPage/>}/>
-                    </Routes>
+                <div className="container-fluid mt-3">
+                    {!isLoading &&
+                        <Routes>
+                            <Route path="/" element={<Home/>}/>
+                            <Route path="admin" element={<AdminPanel/>}/>
+                            <Route path="*" element={<ErrorPage/>}/>
+                        </Routes>
+                    }
                 </div>
             </UserContext.Provider>
         </>
