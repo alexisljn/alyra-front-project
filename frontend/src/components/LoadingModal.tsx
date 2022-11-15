@@ -1,15 +1,17 @@
-import React, {useContext} from "react";
+import React from "react";
 import {Modal, Spinner} from "react-bootstrap";
-import {UserContext} from "../App";
 
-function LoadingModal() {
+interface LoadingModalProps {
+    showModal: boolean
+    closeModal: () => void
+}
 
-    const {displayTransactionLoadingModal, toggleDisplayTransactionLoadingModal} = useContext(UserContext);
+function LoadingModal({showModal, closeModal}: LoadingModalProps) {
 
     return (
         <Modal
-            show={displayTransactionLoadingModal}
-            onHide={toggleDisplayTransactionLoadingModal}
+            show={showModal}
+            onHide={closeModal}
         >
             <Modal.Header closeButton>
                 <Modal.Title>
@@ -25,7 +27,7 @@ function LoadingModal() {
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <button className="btn btn-primary" onClick={toggleDisplayTransactionLoadingModal}>Close</button>
+                <button className="btn btn-primary" onClick={closeModal}>Close</button>
             </Modal.Footer>
         </Modal>
     )

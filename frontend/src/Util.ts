@@ -1,4 +1,5 @@
 import {ethers} from "ethers";
+import Swal from 'sweetalert2';
 
 const ADDRESSES_LABEL: string = 'addresses';
 
@@ -117,6 +118,24 @@ function getNextVotingStatus(currentStatus: VotingStatus) {
     return currentStatus + 1;
 }
 
+type toastType = "success" | "error" | "warning"
+
+function fireToast(type: toastType, text: string) {
+    const bgColor: {[key: string]: string} = {success: '#28a745', error: '#dc3545', warning: '#ffc107'};
+
+    const textColor = {success: 'white', error: 'white', warning: '#343a40'};
+
+    Swal.fire({
+        title: text,
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: bgColor[type],
+        color: textColor[type]
+    });
+}
 
 export {
     saveAddressInLocalStorage,
@@ -126,6 +145,8 @@ export {
     getChainIdName,
     formatAddressWithChecksum,
     getNextVotingStatus,
+    VotingStatus,
+    fireToast,
     mappingBetweenStatusAndLabels,
     DEFAULT_ADDRESS
 }

@@ -1,6 +1,11 @@
 import {Contract, ethers, providers} from "ethers";
 import {DEFAULT_ADDRESS, formatAddressWithChecksum, mappingBetweenStatusAndLabels} from "../Util";
-import {handleAccountsChanged, handleChainChanged, handleWorkflowStatusChange} from "../EventHandlers";
+import {
+    handleAccountsChanged,
+    handleChainChanged,
+    handleVoterRegistered,
+    handleWorkflowStatusChange
+} from "../EventHandlers";
 
 class ContractManager {
 
@@ -64,6 +69,20 @@ class ContractManager {
         await contractWithSigner[mappingBetweenStatusAndLabels[status].functionName!]()
     }
 
+    static async addVoter(address: string) {
+        const signer = ContractManager.provider.getSigner();
+
+        const contractWithSigner = ContractManager.contract!.connect(signer);
+
+        await contractWithSigner.addVoter(address);
+    }
+
+    static async getVoter(address: string) {
+        if (ContractManager.contract) {
+            return await ContractManager.contract.getVoter(address);
+        }
+    }
+
     static listenProviderEvents() {
         window.ethereum.on('chainChanged', handleChainChanged);
 
@@ -78,10 +97,14 @@ class ContractManager {
 
     static listenContractEvents() {
         ContractManager.contract!.on('WorkflowStatusChange', handleWorkflowStatusChange);
+
+        ContractManager.contract!.on('VoterRegistered', handleVoterRegistered);
     }
 
     static cleanContractEvents() {
         ContractManager.contract!.off('WorkflowStatusChange', handleWorkflowStatusChange);
+
+        ContractManager.contract!.off('VoterRegistered', handleVoterRegistered);
     }
 
     static cleanEvents() {

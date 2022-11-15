@@ -2,7 +2,7 @@ import React, {createContext, useCallback, useEffect, useState} from 'react';
 import './App.css';
 import Header from "./components/Header";
 import {
-    DEFAULT_ADDRESS,
+    DEFAULT_ADDRESS, fireToast,
     getLastUsedAddress,
     isChainIdCorrect,
     saveAddressInLocalStorage
@@ -20,10 +20,8 @@ interface UserContext {
     chainId: number
     isAdmin: boolean
     votingStatus: number | null
-    displayTransactionLoadingModal: boolean
     toggleIsLogged: () => void
     changeAddress: (address: string) => void
-    toggleDisplayTransactionLoadingModal: () => void
 }
 
 const UserContext = createContext<UserContext>({
@@ -32,10 +30,8 @@ const UserContext = createContext<UserContext>({
     chainId: 0,
     isAdmin: false,
     votingStatus: null,
-    displayTransactionLoadingModal: false,
     toggleIsLogged: () => {},
     changeAddress: () => {},
-    toggleDisplayTransactionLoadingModal: () => {}
 });
 
 function App() {
@@ -52,18 +48,12 @@ function App() {
 
     const [votingStatus, setVotingStatus] = useState<number | null>(null);
 
-    const [displayTransactionLoadingModal, setDisplayTransactionLoadingModal] = useState(false);
-
     const toggleIsLogged = useCallback(() => {
         setIsLogged(isLogged => !isLogged);
     }, []);
 
     const changeAddress = useCallback((address: string) => {
         setAddress(address);
-    }, []);
-
-    const toggleDisplayTransactionLoadingModal = useCallback(() => {
-        setDisplayTransactionLoadingModal(displayTransactionLoadingModal => !displayTransactionLoadingModal);
     }, []);
 
     const handleAutoLogin = useCallback(async (): Promise<string> => {
@@ -92,7 +82,7 @@ function App() {
 
             setVotingStatus(await ContractManager.getVotingStatus());
         } else {
-            throw new Error("Bad network") //TODO
+            throw new Error();
         }
     }, []);
 
@@ -110,12 +100,7 @@ function App() {
     const handleContractEvents = useCallback((e: any) => {
         switch (e.detail.type) {
             case 'workflowStatusChange':
-                const {newStatus} = e.detail.value;
-
-                setVotingStatus(newStatus);
-
-                setDisplayTransactionLoadingModal(false);
-
+                setVotingStatus(e.detail.value);
                 break;
         }
     }, []);
@@ -123,12 +108,12 @@ function App() {
     useEffect(() => {
         (async () => {
             if (window.hasOwnProperty('ethereum')) {
-                ContractManager.initiateProvider()
+                ContractManager.initiateProvider();
 
                 try {
                     await initialization()
                 } catch (error) {
-                    alert('Couldn\'t connect to contract'); //TODO reseau
+                    fireToast('error', 'Something went wrong during app initialization');
 
                     console.error(error);
                 }
@@ -154,21 +139,26 @@ function App() {
         if (isLoading) return; /* Initialization Guard */
 
         (async () => {
-            if (isChainIdCorrect(chainId)) {
-                await ContractManager.attachToContract();
+            try {
+                if (isChainIdCorrect(chainId)) {
+                    await ContractManager.attachToContract();
 
-                setVotingStatus(await ContractManager.getVotingStatus());
+                    setVotingStatus(await ContractManager.getVotingStatus());
 
-                setIsAdmin(await ContractManager.isCurrentUserOwner(address));
+                    setIsAdmin(await ContractManager.isCurrentUserOwner(address));
 
-                return;
+                    return;
+                }
+
+                ContractManager.resetContract();
+
+                setIsAdmin(false);
+
+                fireToast('warning', `You need to switch network`);
+            } catch (error) {
+                fireToast('error', 'Something went wrong');
             }
 
-            ContractManager.resetContract();
-
-            setIsAdmin(false);
-
-            //TODO alert pour dire d'être sur le bon reseau
         })();
     }, [chainId]);
 
@@ -176,18 +166,23 @@ function App() {
         if (isLoading) return; /* Initialization Guard */
 
         (async () => {
-            saveAddressInLocalStorage(address);
+            try {
+                saveAddressInLocalStorage(address);
 
-            isChainIdCorrect(chainId)
-                ? setIsAdmin(await ContractManager.isCurrentUserOwner(address))
-                : setIsAdmin(false)
-            ;
+                isChainIdCorrect(chainId)
+                    ? setIsAdmin(await ContractManager.isCurrentUserOwner(address))
+                    : setIsAdmin(false)
+                ;
+
+            } catch (error) {
+                fireToast('error', 'Something went wrong');
+            }
         })();
     }, [address])
 
     return(
         <>
-            <UserContext.Provider value={{isLogged, toggleIsLogged, address, changeAddress, isAdmin, chainId, votingStatus, displayTransactionLoadingModal, toggleDisplayTransactionLoadingModal}}>
+            <UserContext.Provider value={{isLogged, toggleIsLogged, address, changeAddress, isAdmin, chainId, votingStatus}}>
                 <Header/>
                 <div className="container-fluid mt-3">
                     {!isLoading &&

@@ -21,10 +21,27 @@ function handleAccountsChanged(accounts: any) {
 }
 
 function handleWorkflowStatusChange(oldStatus: number, newStatus: number) {
-    const event = new CustomEvent(CONTRACT_EVENT, {detail: {type: 'workflowStatusChange', value: {oldStatus, newStatus}}});
+    const event = new CustomEvent(CONTRACT_EVENT, {detail: {type: 'workflowStatusChange', value: newStatus}});
+
+    const localEvent = new CustomEvent('votingStatusChangeSuccess', {detail: {value: {oldStatus, newStatus}}});
 
     window.dispatchEvent(event);
+
+    window.dispatchEvent(localEvent);
 }
 
-export {handleChainChanged, handleAccountsChanged, handleWorkflowStatusChange, PROVIDER_EVENT, CONTRACT_EVENT};
+function handleVoterRegistered(address: string) {
+    const localEvent = new CustomEvent('voterRegistrationSuccess', {detail: {value: address}});
+
+    window.dispatchEvent(localEvent);
+}
+
+export {
+    handleChainChanged,
+    handleAccountsChanged,
+    handleWorkflowStatusChange,
+    handleVoterRegistered,
+    PROVIDER_EVENT,
+    CONTRACT_EVENT
+};
 
