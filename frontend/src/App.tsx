@@ -79,6 +79,8 @@ function App() {
             await ContractManager.attachToContract();
 
             setIsAdmin(await ContractManager.isCurrentUserOwner(lastUsedAddress));
+
+            setVotingStatus(await ContractManager.getVotingStatus());
         } else {
             throw new Error("Bad network") //TODO
         }
@@ -137,6 +139,8 @@ function App() {
         (async () => {
             if (isChainIdCorrect(chainId)) {
                 await ContractManager.attachToContract();
+
+                setVotingStatus(await ContractManager.getVotingStatus());
 
                 setIsAdmin(await ContractManager.isCurrentUserOwner(address));
 
