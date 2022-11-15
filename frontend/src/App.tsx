@@ -2,7 +2,7 @@ import React, {createContext, useCallback, useEffect, useState} from 'react';
 import './App.css';
 import Header from "./components/Header";
 import {
-    DEFAULT_ADDRESS,
+    DEFAULT_ADDRESS, fireToast,
     getLastUsedAddress,
     isChainIdCorrect,
     saveAddressInLocalStorage
@@ -113,7 +113,7 @@ function App() {
                 try {
                     await initialization()
                 } catch (error) {
-                    alert('Couldn\'t connect to contract'); //TODO reseau
+                    fireToast('error', 'Something went wrong during app initialization');
 
                     console.error(error);
                 }
