@@ -8,6 +8,24 @@ interface LocalStorageItem {
     [key: string]: number
 }
 
+enum VotingStatus {
+    RegisteringVoters,
+    ProposalsRegistrationStarted,
+    ProposalsRegistrationEnded,
+    VotingSessionStarted,
+    VotingSessionEnded,
+    VotesTallied
+}
+
+const mappingBetweenStatusAndLabels: {[key: number]: {label: string, functionName: string | null}} = {
+    [VotingStatus.RegisteringVoters]: {label: 'Registering voters', functionName: null},
+    [VotingStatus.ProposalsRegistrationStarted]: {label: 'Proposals registration started', functionName: 'startProposalsRegistering'},
+    [VotingStatus.ProposalsRegistrationEnded]: {label: 'Proposals registration ended', functionName: 'endProposalsRegistering'},
+    [VotingStatus.VotingSessionStarted]: {label: 'Voting session started', functionName: 'startVotingSession'},
+    [VotingStatus.VotingSessionEnded]: {label: 'Voting session ended', functionName: 'endVotingSession'},
+    [VotingStatus.VotesTallied]: {label: 'Votes tallied', functionName: 'tallyVotes'}
+}
+
 function saveAddressInLocalStorage(address: string) {
     if (address == DEFAULT_ADDRESS) return;
 
@@ -91,6 +109,14 @@ function formatAddressWithChecksum(address: string) {
     return ethers.utils.getAddress(address);
 }
 
+function getNextVotingStatus(currentStatus: VotingStatus) {
+    if (currentStatus === VotingStatus.VotesTallied) {
+        return null
+    }
+
+    return currentStatus + 1;
+}
+
 
 export {
     saveAddressInLocalStorage,
@@ -99,5 +125,7 @@ export {
     isChainIdCorrect,
     getChainIdName,
     formatAddressWithChecksum,
+    getNextVotingStatus,
+    mappingBetweenStatusAndLabels,
     DEFAULT_ADDRESS
 }
