@@ -20,10 +20,8 @@ interface UserContext {
     chainId: number
     isAdmin: boolean
     votingStatus: number | null
-    displayTransactionLoadingModal: boolean
     toggleIsLogged: () => void
     changeAddress: (address: string) => void
-    toggleDisplayTransactionLoadingModal: () => void
 }
 
 const UserContext = createContext<UserContext>({
@@ -32,10 +30,8 @@ const UserContext = createContext<UserContext>({
     chainId: 0,
     isAdmin: false,
     votingStatus: null,
-    displayTransactionLoadingModal: false,
     toggleIsLogged: () => {},
     changeAddress: () => {},
-    toggleDisplayTransactionLoadingModal: () => {}
 });
 
 function App() {
@@ -52,18 +48,12 @@ function App() {
 
     const [votingStatus, setVotingStatus] = useState<number | null>(null);
 
-    const [displayTransactionLoadingModal, setDisplayTransactionLoadingModal] = useState(false);
-
     const toggleIsLogged = useCallback(() => {
         setIsLogged(isLogged => !isLogged);
     }, []);
 
     const changeAddress = useCallback((address: string) => {
         setAddress(address);
-    }, []);
-
-    const toggleDisplayTransactionLoadingModal = useCallback(() => {
-        setDisplayTransactionLoadingModal(displayTransactionLoadingModal => !displayTransactionLoadingModal);
     }, []);
 
     const handleAutoLogin = useCallback(async (): Promise<string> => {
@@ -110,12 +100,7 @@ function App() {
     const handleContractEvents = useCallback((e: any) => {
         switch (e.detail.type) {
             case 'workflowStatusChange':
-                const {newStatus} = e.detail.value;
-
-                setVotingStatus(newStatus);
-
-                setDisplayTransactionLoadingModal(false);
-
+                setVotingStatus(e.detail.value);
                 break;
         }
     }, []);
