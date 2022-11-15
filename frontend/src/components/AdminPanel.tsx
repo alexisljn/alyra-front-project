@@ -45,11 +45,16 @@ function AdminPanel() {
                 return
             }
 
-            throw new Error('Contract instance not available')
+            throw new Error();
 
-        } catch (error) {
-            console.log("trigger si revert ") // OUI ! TODO
-            console.error(error);
+        } catch (error: Error | any) {
+            if (error.hasOwnProperty('error')) {
+                fireToast('error', error.error.data.message);
+
+                return;
+            }
+
+            fireToast('error', 'Error ! Something went wrong');
         }
     }, [votingStatus]);
 
