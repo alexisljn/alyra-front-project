@@ -82,7 +82,7 @@ function App() {
 
             setVotingStatus(await ContractManager.getVotingStatus());
         } else {
-            throw new Error("Bad network") //TODO
+            throw new Error();
         }
     }, []);
 
@@ -108,7 +108,7 @@ function App() {
     useEffect(() => {
         (async () => {
             if (window.hasOwnProperty('ethereum')) {
-                ContractManager.initiateProvider()
+                ContractManager.initiateProvider();
 
                 try {
                     await initialization()
@@ -161,18 +161,23 @@ function App() {
         if (isLoading) return; /* Initialization Guard */
 
         (async () => {
-            saveAddressInLocalStorage(address);
+            try {
+                saveAddressInLocalStorage(address);
 
-            isChainIdCorrect(chainId)
-                ? setIsAdmin(await ContractManager.isCurrentUserOwner(address))
-                : setIsAdmin(false)
-            ;
+                isChainIdCorrect(chainId)
+                    ? setIsAdmin(await ContractManager.isCurrentUserOwner(address))
+                    : setIsAdmin(false)
+                ;
+
+            } catch (error) {
+                fireToast('error', 'Something went wrong');
+            }
         })();
     }, [address])
 
     return(
         <>
-            <UserContext.Provider value={{isLogged, toggleIsLogged, address, changeAddress, isAdmin, chainId, votingStatus, displayTransactionLoadingModal, toggleDisplayTransactionLoadingModal}}>
+            <UserContext.Provider value={{isLogged, toggleIsLogged, address, changeAddress, isAdmin, chainId, votingStatus}}>
                 <Header/>
                 <div className="container-fluid mt-3">
                     {!isLoading &&
