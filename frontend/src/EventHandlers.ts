@@ -21,10 +21,7 @@ function handleAccountsChanged(accounts: any) {
 }
 
 function handleWorkflowStatusChange(oldStatus: number, newStatus: number) {
-    console.log(typeof  oldStatus, typeof newStatus)
-    console.log('WorkflowStatusChange trigger', oldStatus, newStatus)
-
-    const event = new CustomEvent(CONTRACT_EVENT, {detail: {type: 'accountsChanged', value: {oldStatus, newStatus}}});
+    const event = new CustomEvent(CONTRACT_EVENT, {detail: {type: 'workflowStatusChange', value: {oldStatus, newStatus}}});
 
     window.dispatchEvent(event);
 }
