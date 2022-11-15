@@ -109,6 +109,14 @@ function formatAddressWithChecksum(address: string) {
     return ethers.utils.getAddress(address);
 }
 
+function getNextVotingStatus(currentStatus: VotingStatus) {
+    if (currentStatus === VotingStatus.VotesTallied) {
+        return null
+    }
+
+    return currentStatus + 1;
+}
+
 
 export {
     saveAddressInLocalStorage,
@@ -117,5 +125,7 @@ export {
     isChainIdCorrect,
     getChainIdName,
     formatAddressWithChecksum,
+    getNextVotingStatus,
+    mappingBetweenStatusAndLabels,
     DEFAULT_ADDRESS
 }
