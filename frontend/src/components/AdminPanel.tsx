@@ -32,7 +32,11 @@ function AdminPanel() {
                 await ContractManager.changeVotingStatus(status);
 
                 toggleDisplayTransactionLoadingModal();
-            } //TODO throw si non dispo
+
+                return
+            }
+
+            throw new Error('Contract instance not available')
 
         } catch (error) {
             console.log("trigger si revert ") // OUI ! TODO
