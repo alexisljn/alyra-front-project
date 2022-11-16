@@ -91,6 +91,20 @@ class ContractManager {
         await contractWithSigner.addProposal(description);
     }
 
+    static async getProposals() {
+        const proposals = await ContractManager.contract!.getProposals();
+
+        const proposalsDescription: Array<string> = [];
+
+        proposals.forEach((proposal: {[key: string]: any, description: string}) => {
+            const {description} = proposal;
+
+            proposalsDescription.push(description);
+        })
+
+        return proposalsDescription;
+    }
+
     static listenProviderEvents() {
         window.ethereum.on('chainChanged', handleChainChanged);
 
