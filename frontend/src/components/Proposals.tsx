@@ -8,6 +8,8 @@ function Proposals() {
 
     const [showLoadingModal, setShowLoadingModal] = useState(false);
 
+    const [proposals, setProposals] = useState<Array<string>>([]);
+
     const {chainId, votingStatus} = useContext(UserContext);
 
     const addProposalTextAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -47,22 +49,38 @@ function Proposals() {
         }
     }, []);
 
-    const handleLocalEvents = useCallback((e: any) => {
+    const handleLocalEvents = useCallback(async (e: any) => {
         switch (e.type) {
             case 'proposalRegistrationSuccess':
                 setShowLoadingModal(false);
 
                 fireToast('success', 'Success ! Proposal has been submitted');
+
+                if (ContractManager.contract) {
+                    const proposals = await ContractManager.getProposals();
+
+                    setProposals(proposals)
+                }
+
                 break;
         }
     }, []);
 
     useEffect(() => {
-            window.addEventListener('proposalRegistrationSuccess', handleLocalEvents);
+        (async () => {
 
-            return () => {
-                window.removeEventListener('proposalRegistrationSuccess', handleLocalEvents);
+            if (ContractManager.contract) {
+                const proposals = await ContractManager.getProposals();
+
+                setProposals(proposals)
             }
+
+            window.addEventListener('proposalRegistrationSuccess', handleLocalEvents);
+        })();
+
+        return () => {
+            window.removeEventListener('proposalRegistrationSuccess', handleLocalEvents);
+        }
     }, []);
 
     return (
@@ -74,7 +92,26 @@ function Proposals() {
                     <>
                         {showLoadingModal && <LoadingModal showModal={showLoadingModal} closeModal={closeModal}/>}
                         <div>
-                            <div>Listing proposals (TODO)</div>
+                            <div>
+                                <h4>Current proposals</h4>
+                                {proposals.length > 0
+                                    ?
+                                        <div className="mb-2 d-flex">
+                                            {proposals.map((proposal, index) => (
+                                                <div key={index} className="card col-2 me-3">
+                                                    <div className="card-body">
+                                                        <p className="card-text">{proposal}</p>
+                                                    </div>
+                                                    <div className="ms-2 mb-2 mt-1">
+                                                        <button className="btn btn-sm btn-primary">Vote</button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    :
+                                        <p>There's currently no proposal</p>
+                                }
+                            </div>
                             <div className="mt-4">
                                 <h4>Add proposal</h4>
                                 {votingStatus === VotingStatus.ProposalsRegistrationStarted
@@ -89,7 +126,6 @@ function Proposals() {
                                                           ref={addProposalTextAreaRef}></textarea>
                                             </div>
                                             <button className="btn btn-primary" onClick={addProposal}>Submit</button>
-
                                         </div>
                                     :
                                         <p>You can't add proposals</p>
