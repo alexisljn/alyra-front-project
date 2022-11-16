@@ -42,6 +42,9 @@ function Header() {
                         <Link to={`/`} className="nav-link">Home</Link>
                         {/*<a className="nav-link active" aria-current="page" href="#">Home</a>*/}
                     </li>
+                    <li className="nav-item">
+                        <Link to={`proposals`} className="nav-link">Proposals</Link>
+                    </li>
                     {isAdmin &&
                         <li className="nav-item">
                             <Link to={`admin`} className="nav-link">Admin</Link>

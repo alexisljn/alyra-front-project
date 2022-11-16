@@ -67,6 +67,8 @@ function AdminPanel() {
                     await ContractManager.addVoter(address)
 
                     setShowLoadingModal(true);
+
+                    return;
                 }
 
                 throw new Error();
