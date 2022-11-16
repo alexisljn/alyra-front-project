@@ -83,6 +83,14 @@ class ContractManager {
         }
     }
 
+    static async addProposal(description: string) {
+        const signer = ContractManager.provider.getSigner();
+
+        const contractWithSigner = ContractManager.contract!.connect(signer);
+
+        await contractWithSigner.addProposal(description);
+    }
+
     static listenProviderEvents() {
         window.ethereum.on('chainChanged', handleChainChanged);
 
