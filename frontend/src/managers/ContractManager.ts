@@ -2,7 +2,7 @@ import {Contract, ethers, providers} from "ethers";
 import {DEFAULT_ADDRESS, formatAddressWithChecksum, mappingBetweenStatusAndLabels} from "../Util";
 import {
     handleAccountsChanged,
-    handleChainChanged,
+    handleChainChanged, handleProposalRegistered,
     handleVoterRegistered,
     handleWorkflowStatusChange
 } from "../EventHandlers";
@@ -107,12 +107,16 @@ class ContractManager {
         ContractManager.contract!.on('WorkflowStatusChange', handleWorkflowStatusChange);
 
         ContractManager.contract!.on('VoterRegistered', handleVoterRegistered);
+
+        ContractManager.contract!.on('ProposalRegistered', handleProposalRegistered);
     }
 
     static cleanContractEvents() {
         ContractManager.contract!.off('WorkflowStatusChange', handleWorkflowStatusChange);
 
         ContractManager.contract!.off('VoterRegistered', handleVoterRegistered);
+
+        ContractManager.contract!.off('ProposalRegistered', handleProposalRegistered);
     }
 
     static cleanEvents() {
