@@ -8,6 +8,8 @@ function Proposals() {
 
     const [showLoadingModal, setShowLoadingModal] = useState(false);
 
+    const [proposals, setProposals] = useState<Array<string>>([]);
+
     const {chainId, votingStatus} = useContext(UserContext);
 
     const addProposalTextAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -47,22 +49,38 @@ function Proposals() {
         }
     }, []);
 
-    const handleLocalEvents = useCallback((e: any) => {
+    const handleLocalEvents = useCallback(async (e: any) => {
         switch (e.type) {
             case 'proposalRegistrationSuccess':
                 setShowLoadingModal(false);
 
                 fireToast('success', 'Success ! Proposal has been submitted');
+
+                if (ContractManager.contract) {
+                    const proposals = await ContractManager.getProposals();
+
+                    setProposals(proposals)
+                }
+
                 break;
         }
     }, []);
 
     useEffect(() => {
-            window.addEventListener('proposalRegistrationSuccess', handleLocalEvents);
+        (async () => {
 
-            return () => {
-                window.removeEventListener('proposalRegistrationSuccess', handleLocalEvents);
+            if (ContractManager.contract) {
+                const proposals = await ContractManager.getProposals();
+
+                setProposals(proposals)
             }
+
+            window.addEventListener('proposalRegistrationSuccess', handleLocalEvents);
+        })();
+
+        return () => {
+            window.removeEventListener('proposalRegistrationSuccess', handleLocalEvents);
+        }
     }, []);
 
     return (
