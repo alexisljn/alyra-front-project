@@ -54,6 +54,11 @@ contract Voting is Ownable {
         return proposalsArray[_id];
     }
 
+    // @dev Had to implement this to list proposals into app
+    function getProposals() external view returns (Proposal[] memory) {
+        return proposalsArray;
+    }
+
 
     // ::::::::::::: REGISTRATION ::::::::::::: // 
 
