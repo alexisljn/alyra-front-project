@@ -92,7 +92,26 @@ function Proposals() {
                     <>
                         {showLoadingModal && <LoadingModal showModal={showLoadingModal} closeModal={closeModal}/>}
                         <div>
-                            <div>Listing proposals (TODO)</div>
+                            <div>
+                                <h4>Current proposals</h4>
+                                {proposals.length > 0
+                                    ?
+                                        <div className="mb-2 d-flex">
+                                            {proposals.map((proposal, index) => (
+                                                <div key={index} className="card col-2 me-3">
+                                                    <div className="card-body">
+                                                        <p className="card-text">{proposal}</p>
+                                                    </div>
+                                                    <div className="ms-2 mb-2 mt-1">
+                                                        <button className="btn btn-sm btn-primary">Vote</button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    :
+                                        <p>There's currently no proposal</p>
+                                }
+                            </div>
                             <div className="mt-4">
                                 <h4>Add proposal</h4>
                                 {votingStatus === VotingStatus.ProposalsRegistrationStarted
@@ -107,7 +126,6 @@ function Proposals() {
                                                           ref={addProposalTextAreaRef}></textarea>
                                             </div>
                                             <button className="btn btn-primary" onClick={addProposal}>Submit</button>
-
                                         </div>
                                     :
                                         <p>You can't add proposals</p>
