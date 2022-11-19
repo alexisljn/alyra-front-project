@@ -2,7 +2,9 @@ import {Contract, ethers, providers} from "ethers";
 import {DEFAULT_ADDRESS, formatAddressWithChecksum, mappingBetweenStatusAndLabels} from "../Util";
 import {
     handleAccountsChanged,
-    handleChainChanged, handleProposalRegistered,
+    handleChainChanged,
+    handleProposalRegistered,
+    handleVoted,
     handleVoterRegistered,
     handleWorkflowStatusChange
 } from "../EventHandlers";
@@ -83,6 +85,14 @@ class ContractManager {
         }
     }
 
+    static async setVote(proposalId: number) {
+        const signer = ContractManager.provider.getSigner();
+
+        const contractWithSigner = ContractManager.contract!.connect(signer);
+
+        await contractWithSigner.setVote(proposalId);
+    }
+
     static async addProposal(description: string) {
         const signer = ContractManager.provider.getSigner();
 
@@ -123,6 +133,8 @@ class ContractManager {
         ContractManager.contract!.on('VoterRegistered', handleVoterRegistered);
 
         ContractManager.contract!.on('ProposalRegistered', handleProposalRegistered);
+
+        ContractManager.contract!.on('Voted', handleVoted);
     }
 
     static cleanContractEvents() {
@@ -131,6 +143,8 @@ class ContractManager {
         ContractManager.contract!.off('VoterRegistered', handleVoterRegistered);
 
         ContractManager.contract!.off('ProposalRegistered', handleProposalRegistered);
+
+        ContractManager.contract!.off('Voted', handleVoted);
     }
 
     static cleanEvents() {

@@ -1,4 +1,4 @@
-import {ethers} from "ethers";
+import {BigNumber, ethers} from "ethers";
 
 const PROVIDER_EVENT = 'providerEvent';
 
@@ -30,14 +30,20 @@ function handleWorkflowStatusChange(oldStatus: number, newStatus: number) {
     window.dispatchEvent(localEvent);
 }
 
-function handleVoterRegistered(address: string) {
-    const localEvent = new CustomEvent('voterRegistrationSuccess', {detail: {value: address}});
+function handleVoterRegistered(address: string, registeredBy: string) {
+    const localEvent = new CustomEvent('voterRegistrationSuccess', {detail: {value: {address, registeredBy}}});
 
     window.dispatchEvent(localEvent);
 }
 
-function handleProposalRegistered(proposalIndex: number) {
-    const localEvent = new CustomEvent('proposalRegistrationSuccess', {detail: {value: proposalIndex}});
+function handleProposalRegistered(proposalIndex: number, sender: string) {
+    const localEvent = new CustomEvent('proposalRegistrationSuccess', {detail: {value: sender}});
+
+    window.dispatchEvent(localEvent);
+}
+
+function handleVoted(address: string, proposalId: BigNumber) {
+    const localEvent = new CustomEvent('votedSuccess', {detail: {value: address}});
 
     window.dispatchEvent(localEvent);
 }
@@ -48,6 +54,7 @@ export {
     handleWorkflowStatusChange,
     handleVoterRegistered,
     handleProposalRegistered,
+    handleVoted,
     PROVIDER_EVENT,
     CONTRACT_EVENT
 };

@@ -10,7 +10,7 @@ function Proposals() {
 
     const [proposals, setProposals] = useState<Array<string>>([]);
 
-    const {chainId, votingStatus} = useContext(UserContext);
+    const {chainId, votingStatus, address} = useContext(UserContext);
 
     const addProposalTextAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -34,7 +34,7 @@ function Proposals() {
                     return;
                 }
 
-                throw new Error();
+                throw new Error('Something went wrong');
 
             } catch (error: Error | any) {
                 if (error.hasOwnProperty('error')) {
@@ -49,17 +49,53 @@ function Proposals() {
         }
     }, []);
 
+    const setVote = useCallback(async (e: any) => {
+        try {
+            const proposalId = parseInt(e.target.getAttribute('data-index'));
+
+            if (ContractManager.contract) {
+                await ContractManager.setVote(proposalId);
+
+                setShowLoadingModal(true);
+
+                return;
+            }
+
+            throw new Error('Something went wrong');
+
+        } catch (error: Error | any) {
+            if (error.hasOwnProperty('error')) {
+
+                fireToast('error', error.error.data.message);
+
+                return;
+            }
+
+            fireToast('error', error.message);
+        }
+    }, []);
+
     const handleLocalEvents = useCallback(async (e: any) => {
         switch (e.type) {
             case 'proposalRegistrationSuccess':
-                setShowLoadingModal(false);
+                if (address === e.detail.value) {
+                    setShowLoadingModal(false);
 
-                fireToast('success', 'Success ! Proposal has been submitted');
+                    fireToast('success', 'Success ! Proposal has been submitted');
+                }
 
                 if (ContractManager.contract) {
                     const proposals = await ContractManager.getProposals();
 
-                    setProposals(proposals)
+                    setProposals(proposals);
+                }
+
+                break;
+            case 'votedSuccess':
+                if (address === e.detail.value) {
+                    setShowLoadingModal(false);
+
+                    fireToast('success', 'Success ! Your vote has been saved');
                 }
 
                 break;
@@ -76,10 +112,14 @@ function Proposals() {
             }
 
             window.addEventListener('proposalRegistrationSuccess', handleLocalEvents);
+
+            window.addEventListener('votedSuccess', handleLocalEvents);
         })();
 
         return () => {
             window.removeEventListener('proposalRegistrationSuccess', handleLocalEvents);
+
+            window.removeEventListener('votedSuccess', handleLocalEvents);
         }
     }, []);
 
@@ -103,7 +143,11 @@ function Proposals() {
                                                         <p className="card-text">{proposal}</p>
                                                     </div>
                                                     <div className="ms-2 mb-2 mt-1">
-                                                        <button className="btn btn-sm btn-primary">Vote</button>
+                                                        <button data-index={index} className="btn btn-sm btn-primary"
+                                                                onClick={(event) => setVote(event)}
+                                                        >
+                                                            Vote
+                                                        </button>
                                                     </div>
                                                 </div>
                                             ))}
