@@ -10,7 +10,7 @@ function Proposals() {
 
     const [proposals, setProposals] = useState<Array<string>>([]);
 
-    const {chainId, votingStatus} = useContext(UserContext);
+    const {chainId, votingStatus, address} = useContext(UserContext);
 
     const addProposalTextAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -52,14 +52,24 @@ function Proposals() {
     const handleLocalEvents = useCallback(async (e: any) => {
         switch (e.type) {
             case 'proposalRegistrationSuccess':
-                setShowLoadingModal(false);
+                if (address === e.detail.value) {
+                    setShowLoadingModal(false);
 
-                fireToast('success', 'Success ! Proposal has been submitted');
+                    fireToast('success', 'Success ! Proposal has been submitted');
+                }
 
                 if (ContractManager.contract) {
                     const proposals = await ContractManager.getProposals();
 
-                    setProposals(proposals)
+                    setProposals(proposals);
+                }
+
+                break;
+            case 'votedSuccess':
+                if (address === e.detail.value) {
+                    setShowLoadingModal(false);
+
+                    fireToast('success', 'Success ! Your vote has been saved');
                 }
 
                 break;
