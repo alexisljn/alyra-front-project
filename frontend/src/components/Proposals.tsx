@@ -112,10 +112,14 @@ function Proposals() {
             }
 
             window.addEventListener('proposalRegistrationSuccess', handleLocalEvents);
+
+            window.addEventListener('votedSuccess', handleLocalEvents);
         })();
 
         return () => {
             window.removeEventListener('proposalRegistrationSuccess', handleLocalEvents);
+
+            window.removeEventListener('votedSuccess', handleLocalEvents);
         }
     }, []);
 
