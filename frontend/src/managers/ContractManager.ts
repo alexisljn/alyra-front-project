@@ -115,6 +115,14 @@ class ContractManager {
         return proposalsDescription;
     }
 
+    static async tallyVotes() {
+        const signer = ContractManager.provider.getSigner();
+
+        const contractWithSigner = ContractManager.contract!.connect(signer);
+
+        await contractWithSigner.tallyVotes();
+    }
+
     static listenProviderEvents() {
         window.ethereum.on('chainChanged', handleChainChanged);
 
