@@ -42,6 +42,8 @@ function handleProposalRegistered(proposalIndex: number, sender: string) {
     window.dispatchEvent(localEvent);
 }
 
+function handleVoted(address: string, proposalId: BigNumber) {
+    const localEvent = new CustomEvent('votedSuccess', {detail: {value: address}});
 
     window.dispatchEvent(localEvent);
 }
@@ -52,6 +54,7 @@ export {
     handleWorkflowStatusChange,
     handleVoterRegistered,
     handleProposalRegistered,
+    handleVoted,
     PROVIDER_EVENT,
     CONTRACT_EVENT
 };
