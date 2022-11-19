@@ -34,7 +34,7 @@ function Proposals() {
                     return;
                 }
 
-                throw new Error();
+                throw new Error('Something went wrong');
 
             } catch (error: Error | any) {
                 if (error.hasOwnProperty('error')) {
