@@ -24,6 +24,7 @@ function AdminPanel() {
         isAdmin,
         votingStatus,
         chainId,
+        address
     } = useContext(UserContext);
 
     const closeModal = useCallback(() => {
@@ -95,9 +96,11 @@ function AdminPanel() {
     const handleLocalEvents = useCallback((e: any) => {
         switch (e.type) {
             case 'voterRegistrationSuccess':
-                closeModal();
+                if (address === e.detail.value.registeredBy) {
+                    closeModal();
 
-                fireToast('success', `Success ! ${e.detail.value} has been added as a voter`);
+                    fireToast('success', `Success ! ${e.detail.value.address} has been added as a voter`);
+                }
 
                 break;
             case 'votingStatusChangeSuccess':
