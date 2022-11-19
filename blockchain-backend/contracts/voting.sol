@@ -32,9 +32,9 @@ contract Voting is Ownable {
     mapping (address => Voter) voters;
 
 
-    event VoterRegistered(address voterAddress);
+    event VoterRegistered(address voterAddress, address registeredBy);
     event WorkflowStatusChange(WorkflowStatus previousStatus, WorkflowStatus newStatus);
-    event ProposalRegistered(uint proposalId);
+    event ProposalRegistered(uint proposalId, address sender);
     event Voted (address voter, uint proposalId);
 
     modifier onlyVoters() {
@@ -67,7 +67,7 @@ contract Voting is Ownable {
         require(voters[_addr].isRegistered != true, 'Already registered');
 
         voters[_addr].isRegistered = true;
-        emit VoterRegistered(_addr);
+        emit VoterRegistered(_addr, msg.sender);
     }
 
 
@@ -81,7 +81,7 @@ contract Voting is Ownable {
         Proposal memory proposal;
         proposal.description = _desc;
         proposalsArray.push(proposal);
-        emit ProposalRegistered(proposalsArray.length-1);
+        emit ProposalRegistered(proposalsArray.length-1, msg.sender);
     }
 
     // ::::::::::::: VOTE ::::::::::::: //
