@@ -130,6 +130,14 @@ function AdminPanel() {
             case 'votingStatusChangeSuccess':
                 closeModal();
 
+                if (e.detail.value.oldStatus === VotingStatus.VotingSessionEnded &&
+                    e.detail.value.newStatus === VotingStatus.VotesTallied)
+                {
+                    fireToast('success', 'Success ! Votes have been tallied');
+
+                    break;
+                }
+
                 const oldStatus = mappingBetweenStatusAndLabels[e.detail.value.oldStatus].label;
 
                 const newStatus = mappingBetweenStatusAndLabels[e.detail.value.newStatus].label;
