@@ -93,6 +93,30 @@ function AdminPanel() {
 
     }, []);
 
+    const tallyVotes = useCallback(async () => {
+        try {
+
+            if (ContractManager.contract) {
+                await ContractManager.tallyVotes();
+
+                setShowLoadingModal(true);
+
+                return
+            }
+
+            throw new Error('Something went wrong')
+
+        } catch (error: Error | any) {
+            if (error.hasOwnProperty('error')) {
+                fireToast('error', error.error.data.message);
+
+                return;
+            }
+
+            fireToast('error', 'Error ! Something went wrong');
+        }
+    }, []);
+
     const handleLocalEvents = useCallback((e: any) => {
         switch (e.type) {
             case 'voterRegistrationSuccess':
@@ -105,6 +129,14 @@ function AdminPanel() {
                 break;
             case 'votingStatusChangeSuccess':
                 closeModal();
+
+                if (e.detail.value.oldStatus === VotingStatus.VotingSessionEnded &&
+                    e.detail.value.newStatus === VotingStatus.VotesTallied)
+                {
+                    fireToast('success', 'Success ! Votes have been tallied');
+
+                    break;
+                }
 
                 const oldStatus = mappingBetweenStatusAndLabels[e.detail.value.oldStatus].label;
 
@@ -187,7 +219,14 @@ function AdminPanel() {
                                                 <button className="btn btn-primary" onClick={addVoter}>Add</button>
                                             </div>
                                         :
-                                        <p>You can't add voters anymore</p>
+                                            <p>You can't add voters anymore</p>
+                                    }
+                                </div>
+                                <div className="mt-4">
+                                    <h4>Tally votes</h4>
+                                    {votingStatus === VotingStatus.VotingSessionEnded
+                                        ? <button className="btn btn-primary" onClick={tallyVotes}>Tally votes</button>
+                                        : <p>You can't tally votes now</p>
                                     }
                                 </div>
                             </div>
