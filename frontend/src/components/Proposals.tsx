@@ -49,6 +49,32 @@ function Proposals() {
         }
     }, []);
 
+    const setVote = useCallback(async (e: any) => {
+        try {
+            const proposalId = parseInt(e.target.getAttribute('data-index'));
+
+            if (ContractManager.contract) {
+                await ContractManager.setVote(proposalId);
+
+                setShowLoadingModal(true);
+
+                return;
+            }
+
+            throw new Error('Something went wrong');
+
+        } catch (error: Error | any) {
+            if (error.hasOwnProperty('error')) {
+
+                fireToast('error', error.error.data.message);
+
+                return;
+            }
+
+            fireToast('error', error.message);
+        }
+    }, []);
+
     const handleLocalEvents = useCallback(async (e: any) => {
         switch (e.type) {
             case 'proposalRegistrationSuccess':
@@ -113,7 +139,11 @@ function Proposals() {
                                                         <p className="card-text">{proposal}</p>
                                                     </div>
                                                     <div className="ms-2 mb-2 mt-1">
-                                                        <button className="btn btn-sm btn-primary">Vote</button>
+                                                        <button data-index={index} className="btn btn-sm btn-primary"
+                                                                onClick={(event) => setVote(event)}
+                                                        >
+                                                            Vote
+                                                        </button>
                                                     </div>
                                                 </div>
                                             ))}
