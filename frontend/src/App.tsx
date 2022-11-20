@@ -110,6 +110,8 @@ function App() {
     useEffect(() => {
         (async () => {
             if (window.hasOwnProperty('ethereum')) {
+                console.log(process.env.REACT_APP_CONTRACT_ADDRESS, typeof process.env.REACT_APP_CONTRACT_ADDRESS)
+                console.log(process.env.REACT_APP_CHAIN_ID, typeof process.env.REACT_APP_CHAIN_ID)
                 ContractManager.initiateProvider();
 
                 try {
