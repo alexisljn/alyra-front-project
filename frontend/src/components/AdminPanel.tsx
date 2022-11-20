@@ -24,7 +24,8 @@ function AdminPanel() {
         isAdmin,
         votingStatus,
         chainId,
-        address
+        address,
+        appLoading
     } = useContext(UserContext);
 
     const closeModal = useCallback(() => {
@@ -175,63 +176,65 @@ function AdminPanel() {
     }, [isAdmin])
 
     return (
-        isLoading
+        appLoading && isLoading
             ?
-                <div className="d-flex justify-content-center">
-                    <Spinner animation="border"></Spinner>
-                </div>
+                <div></div>
             :
                 <>
-                    {showLoadingModal && <LoadingModal showModal={showLoadingModal} closeModal={closeModal}/>}
-                    <div>
-                        <h2>Admin panel</h2>
-                        {isChainIdCorrect(chainId) &&
+                    {isChainIdCorrect(chainId) &&
+                        <>
+                            {showLoadingModal && <LoadingModal showModal={showLoadingModal} closeModal={closeModal}/>}
                             <div>
-                                <p>Current voting status : {mappingBetweenStatusAndLabels[votingStatus!].label}</p>
-                                <div className="mt-3">
-                                    <h4>Change voting status</h4>
-                                    <div className="mt-4">
-                                        {Object.entries(mappingBetweenStatusAndLabels).map(([availableStatus, statusData]) => {
-                                            return <button key={availableStatus}
-                                                           className="btn btn-sm mx-2 btn-primary"
-                                                           disabled={Number(availableStatus) !== getNextVotingStatus(votingStatus!)}
-                                                           onClick={() => changeVotingStatus(Number(availableStatus))}
-                                            >
-                                                {statusData.label}
-                                            </button>
-                                        })}
-                                    </div>
-                                </div>
-                                <div className="mt-4">
-                                    <h4>Add voter</h4>
-                                    {votingStatus === VotingStatus.RegisteringVoters
-                                        ?
-                                            <div className="d-flex align-items-end">
-                                                <div className="mx-2 col-4">
-                                                    <label htmlFor="add-voter-input" className="form-label">Address</label>
-                                                    <input id="add-voter-input"
-                                                           type="text"
-                                                           className="form-control"
-                                                           placeholder="0x..."
-                                                           ref={addVoterInputRef}
-                                                    />
-                                                </div>
-                                                <button className="btn btn-primary" onClick={addVoter}>Add</button>
+                                <h2>Admin panel</h2>
+                                {isChainIdCorrect(chainId) &&
+                                    <div>
+                                        <p>Current voting status : {mappingBetweenStatusAndLabels[votingStatus!].label}</p>
+                                        <div className="mt-3">
+                                            <h4>Change voting status</h4>
+                                            <div className="mt-4">
+                                                {Object.entries(mappingBetweenStatusAndLabels).map(([availableStatus, statusData]) => {
+                                                    return <button key={availableStatus}
+                                                                   className="btn btn-sm mx-2 btn-primary"
+                                                                   disabled={Number(availableStatus) !== getNextVotingStatus(votingStatus!)}
+                                                                   onClick={() => changeVotingStatus(Number(availableStatus))}
+                                                    >
+                                                        {statusData.label}
+                                                    </button>
+                                                })}
                                             </div>
-                                        :
-                                            <p>You can't add voters anymore</p>
-                                    }
-                                </div>
-                                <div className="mt-4">
-                                    <h4>Tally votes</h4>
-                                    {votingStatus === VotingStatus.VotingSessionEnded
-                                        ? <button className="btn btn-primary" onClick={tallyVotes}>Tally votes</button>
-                                        : <p>You can't tally votes now</p>
-                                    }
-                                </div>
+                                        </div>
+                                        <div className="mt-4">
+                                            <h4>Add voter</h4>
+                                            {votingStatus === VotingStatus.RegisteringVoters
+                                                ?
+                                                    <div className="d-flex align-items-end">
+                                                        <div className="mx-2 col-4">
+                                                            <label htmlFor="add-voter-input" className="form-label">Address</label>
+                                                            <input id="add-voter-input"
+                                                                   type="text"
+                                                                   className="form-control"
+                                                                   placeholder="0x..."
+                                                                   ref={addVoterInputRef}
+                                                            />
+                                                        </div>
+                                                        <button className="btn btn-primary" onClick={addVoter}>Add</button>
+                                                    </div>
+                                                :
+                                                    <p>You can't add voters anymore</p>
+                                            }
+                                        </div>
+                                        <div className="mt-4">
+                                            <h4>Tally votes</h4>
+                                            {votingStatus === VotingStatus.VotingSessionEnded
+                                                ? <button className="btn btn-primary" onClick={tallyVotes}>Tally votes</button>
+                                                : <p>You can't tally votes now</p>
+                                            }
+                                        </div>
+                                    </div>
+                                }
                             </div>
-                        }
-                    </div>
+                        </>
+                    }
                 </>
 
     )
