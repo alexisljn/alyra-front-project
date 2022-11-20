@@ -123,6 +123,14 @@ class ContractManager {
         await contractWithSigner.tallyVotes();
     }
 
+    static async getWinningProposal() {
+        const winningId = await ContractManager.contract!.winningProposalID();
+
+        const winningProposal = await ContractManager.contract!.getOneProposal(parseInt(winningId.toString()));
+
+        return {voteCount: parseInt(winningProposal.voteCount.toString()), description: winningProposal.description};
+    }
+
     static listenProviderEvents() {
         window.ethereum.on('chainChanged', handleChainChanged);
 
