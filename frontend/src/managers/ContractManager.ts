@@ -55,12 +55,12 @@ class ContractManager {
         return formatAddressWithChecksum(userAddress) === owner;
     }
 
-    static async getVotingStatus(): Promise<number | null> {
+    static async getVotingStatus(): Promise<number> {
         if (ContractManager.contract) {
             return await ContractManager.contract.workflowStatus();
         }
 
-        return null;
+        return 0;
     }
 
     static async changeVotingStatus(status: number) {
