@@ -28,8 +28,9 @@ function Proposals() {
                 }
 
                 if (ContractManager.contract) {
-
                     await ContractManager.addProposal(addProposalTextAreaRef.current.value);
+
+                    addProposalTextAreaRef.current.value = '';
 
                     setShowLoadingModal(true);
 

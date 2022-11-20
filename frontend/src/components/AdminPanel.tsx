@@ -68,6 +68,8 @@ function AdminPanel() {
                 if (ContractManager.contract) {
                     await ContractManager.addVoter(address)
 
+                    addVoterInputRef.current.value = '';
+
                     setShowLoadingModal(true);
 
                     return;
