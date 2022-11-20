@@ -10,7 +10,9 @@ function Proposals() {
 
     const [proposals, setProposals] = useState<Array<string>>([]);
 
-    const {chainId, votingStatus, address} = useContext(UserContext);
+    const [winningProposal, setWinningProposal] = useState<{voteCount: number, description: string} | null>(null);
+
+    const {chainId, votingStatus, address, appLoading} = useContext(UserContext);
 
     const addProposalTextAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -104,11 +106,16 @@ function Proposals() {
 
     useEffect(() => {
         (async () => {
-
             if (ContractManager.contract) {
                 const proposals = await ContractManager.getProposals();
 
-                setProposals(proposals)
+                setProposals(proposals);
+
+                if (votingStatus === VotingStatus.VotesTallied) {
+                    const winningProposal = await ContractManager.getWinningProposal();
+
+                    setWinningProposal(winningProposal);
+                }
             }
 
             window.addEventListener('proposalRegistrationSuccess', handleLocalEvents);
