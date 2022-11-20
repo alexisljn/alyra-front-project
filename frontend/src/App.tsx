@@ -59,8 +59,7 @@ function App() {
     }, []);
 
     const handleAutoLogin = useCallback(async (): Promise<string> => {
-        //const lastUsedAddress = getLastUsedAddress();
-        const lastUsedAddress = '0x';
+        const lastUsedAddress = getLastUsedAddress();
 
         if (lastUsedAddress !== DEFAULT_ADDRESS) {
             setAddress(lastUsedAddress);
@@ -72,17 +71,19 @@ function App() {
     }, [toggleIsLogged])
 
     const initialization = useCallback(async () => {
+        console.log('t1')
         const lastUsedAddress = await handleAutoLogin();
-
+        console.log('t2')
         const {chainId} = await ContractManager.provider.getNetwork()
-
+        console.log('t3')
         if (isChainIdCorrect(chainId)) {
+            console.log('t4')
             setChainId(chainId);
-
+            console.log('t5')
             await ContractManager.attachToContract();
-
+            console.log('t6')
             setIsAdmin(await ContractManager.isCurrentUserOwner(lastUsedAddress));
-
+            console.log('t7')
             setVotingStatus(await ContractManager.getVotingStatus());
         } else {
             throw new Error('Bad chain id');
