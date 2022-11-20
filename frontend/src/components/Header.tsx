@@ -36,19 +36,14 @@ function Header() {
     return (
         <nav className="navbar bg-light navbar-expand-lg">
             <div className="container-fluid">
-                <a href="#" className="navbar-brand">Voting App</a>
+                <Link to="/" className="navbar-brand">Voting App</Link>
                 <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                     <li className="nav-item">
-                        <Link to={`/`} className="nav-link">Home</Link>
-                        {/*<a className="nav-link active" aria-current="page" href="#">Home</a>*/}
-                    </li>
-                    <li className="nav-item">
-                        <Link to={`proposals`} className="nav-link">Proposals</Link>
+                        <Link to={`/`} className="nav-link">Proposals</Link>
                     </li>
                     {isAdmin &&
                         <li className="nav-item">
                             <Link to={`admin`} className="nav-link">Admin</Link>
-                            {/*<a className="nav-link active" aria-current="page" href="#">Admin</a>*/}
                         </li>
                     }
                 </ul>
