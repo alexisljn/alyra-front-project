@@ -9,7 +9,6 @@ import {
 } from "./Util";
 import {ContractManager} from "./managers/ContractManager";
 import {Route, Routes} from "react-router-dom";
-import Home from "./components/Home";
 import AdminPanel from "./components/AdminPanel";
 import ErrorPage from "./components/ErrorPage";
 import {CONTRACT_EVENT, PROVIDER_EVENT} from "./EventHandlers";
@@ -188,8 +187,7 @@ function App() {
                 <div className="container-fluid mt-3">
                     {!isLoading &&
                         <Routes>
-                            <Route path="/" element={<Home/>}/>
-                            <Route path="proposals" element={<Proposals/>}/>
+                            <Route path="/" element={<Proposals/>}/>
                             <Route path="admin" element={<AdminPanel/>}/>
                             <Route path="*" element={<ErrorPage/>}/>
                         </Routes>
