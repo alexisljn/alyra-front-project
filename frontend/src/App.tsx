@@ -2,7 +2,7 @@ import React, {createContext, useCallback, useEffect, useState} from 'react';
 import './App.css';
 import Header from "./components/Header";
 import {
-    DEFAULT_ADDRESS, fireToast,
+    DEFAULT_ADDRESS, fireToast, getChainIdName,
     getLastUsedAddress,
     isChainIdCorrect,
     saveAddressInLocalStorage
@@ -75,16 +75,16 @@ function App() {
 
         const {chainId} = await ContractManager.provider.getNetwork()
 
-        setChainId(chainId);
-
         if (isChainIdCorrect(chainId)) {
+            setChainId(chainId);
+
             await ContractManager.attachToContract();
 
             setIsAdmin(await ContractManager.isCurrentUserOwner(lastUsedAddress));
 
             setVotingStatus(await ContractManager.getVotingStatus());
         } else {
-            throw new Error();
+            throw new Error('Bad chain id');
         }
     }, []);
 
@@ -114,17 +114,23 @@ function App() {
 
                 try {
                     await initialization()
-                } catch (error) {
-                    fireToast('error', 'Something went wrong during app initialization');
+                } catch (error: any) {
 
                     console.error(error);
+
+                    if (error.message.includes('Bad chain id')) {
+                        fireToast('warning', `Switch network to ${getChainIdName(parseInt(process.env.REACT_APP_CHAIN_ID!))}`)
+
+                    } else {
+                        fireToast('error', 'Something went wrong during app initialization');
+                    }
                 }
 
                 window.addEventListener(PROVIDER_EVENT, handleProviderEvents);
 
                 window.addEventListener(CONTRACT_EVENT, handleContractEvents);
 
-                setIsLoading(false);
+                setAppLoading(false);
             }
         })();
 
@@ -138,34 +144,16 @@ function App() {
     }, []);
 
     useEffect(() => {
-        if (isLoading) return; /* Initialization Guard */
+        if (appLoading) return; /* Initialization Guard */
 
-        (async () => {
-            try {
-                if (isChainIdCorrect(chainId)) {
-                    await ContractManager.attachToContract();
+        setAppLoading(true);
 
-                    setVotingStatus(await ContractManager.getVotingStatus());
+        window.location.reload();
 
-                    setIsAdmin(await ContractManager.isCurrentUserOwner(address));
-
-                    return;
-                }
-
-                ContractManager.resetContract();
-
-                setIsAdmin(false);
-
-                fireToast('warning', `You need to switch network`);
-            } catch (error) {
-                fireToast('error', 'Something went wrong');
-            }
-
-        })();
     }, [chainId]);
 
     useEffect(() => {
-        if (isLoading) return; /* Initialization Guard */
+        if (appLoading) return; /* Initialization Guard */
 
         (async () => {
             try {
@@ -184,10 +172,10 @@ function App() {
 
     return(
         <>
-            <UserContext.Provider value={{isLogged, toggleIsLogged, address, changeAddress, isAdmin, chainId, votingStatus}}>
+            <UserContext.Provider value={{isLogged, toggleIsLogged, address, changeAddress, isAdmin, chainId, votingStatus, appLoading}}>
                 <Header/>
                 <div className="container-fluid mt-3">
-                    {!isLoading &&
+                    {!appLoading &&
                         <Routes>
                             <Route path="/" element={<Proposals/>}/>
                             <Route path="admin" element={<AdminPanel/>}/>
