@@ -24,6 +24,10 @@ class ContractManager {
     static async getAbi() {
         const response = await fetch('artifacts/contracts/voting.sol/Voting.json');
 
+        console.log('response', response);
+
+        console.log(await response.text())
+
         const contractArtifact = await response.json()
 
         return contractArtifact.abi;
