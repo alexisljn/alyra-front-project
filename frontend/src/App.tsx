@@ -2,14 +2,13 @@ import React, {createContext, useCallback, useEffect, useState} from 'react';
 import './App.css';
 import Header from "./components/Header";
 import {
-    DEFAULT_ADDRESS, fireToast,
+    DEFAULT_ADDRESS, fireToast, getChainIdName,
     getLastUsedAddress,
     isChainIdCorrect,
     saveAddressInLocalStorage
 } from "./Util";
 import {ContractManager} from "./managers/ContractManager";
 import {Route, Routes} from "react-router-dom";
-import Home from "./components/Home";
 import AdminPanel from "./components/AdminPanel";
 import ErrorPage from "./components/ErrorPage";
 import {CONTRACT_EVENT, PROVIDER_EVENT} from "./EventHandlers";
@@ -20,7 +19,8 @@ interface UserContext {
     address: string
     chainId: number
     isAdmin: boolean
-    votingStatus: number | null
+    appLoading: boolean
+    votingStatus: number
     toggleIsLogged: () => void
     changeAddress: (address: string) => void
 }
@@ -30,7 +30,8 @@ const UserContext = createContext<UserContext>({
     address: DEFAULT_ADDRESS,
     chainId: 0,
     isAdmin: false,
-    votingStatus: null,
+    appLoading: true,
+    votingStatus: 0,
     toggleIsLogged: () => {},
     changeAddress: () => {},
 });
@@ -45,9 +46,9 @@ function App() {
 
     const [chainId, setChainId] = useState(0);
 
-    const [isLoading, setIsLoading] = useState(true);
+    const [appLoading, setAppLoading] = useState(true);
 
-    const [votingStatus, setVotingStatus] = useState<number | null>(null);
+    const [votingStatus, setVotingStatus] = useState(0);
 
     const toggleIsLogged = useCallback(() => {
         setIsLogged(isLogged => !isLogged);
@@ -74,16 +75,16 @@ function App() {
 
         const {chainId} = await ContractManager.provider.getNetwork()
 
-        setChainId(chainId);
-
         if (isChainIdCorrect(chainId)) {
+            setChainId(chainId);
+
             await ContractManager.attachToContract();
 
             setIsAdmin(await ContractManager.isCurrentUserOwner(lastUsedAddress));
 
             setVotingStatus(await ContractManager.getVotingStatus());
         } else {
-            throw new Error();
+            throw new Error('Bad chain id');
         }
     }, []);
 
@@ -113,17 +114,23 @@ function App() {
 
                 try {
                     await initialization()
-                } catch (error) {
-                    fireToast('error', 'Something went wrong during app initialization');
+                } catch (error: any) {
 
                     console.error(error);
+
+                    if (error.message.includes('Bad chain id')) {
+                        fireToast('warning', `Switch network to ${getChainIdName(parseInt(process.env.REACT_APP_CHAIN_ID!))}`)
+
+                    } else {
+                        fireToast('error', 'Something went wrong during app initialization');
+                    }
                 }
 
                 window.addEventListener(PROVIDER_EVENT, handleProviderEvents);
 
                 window.addEventListener(CONTRACT_EVENT, handleContractEvents);
 
-                setIsLoading(false);
+                setAppLoading(false);
             }
         })();
 
@@ -137,34 +144,16 @@ function App() {
     }, []);
 
     useEffect(() => {
-        if (isLoading) return; /* Initialization Guard */
+        if (appLoading) return; /* Initialization Guard */
 
-        (async () => {
-            try {
-                if (isChainIdCorrect(chainId)) {
-                    await ContractManager.attachToContract();
+        setAppLoading(true);
 
-                    setVotingStatus(await ContractManager.getVotingStatus());
+        window.location.reload();
 
-                    setIsAdmin(await ContractManager.isCurrentUserOwner(address));
-
-                    return;
-                }
-
-                ContractManager.resetContract();
-
-                setIsAdmin(false);
-
-                fireToast('warning', `You need to switch network`);
-            } catch (error) {
-                fireToast('error', 'Something went wrong');
-            }
-
-        })();
     }, [chainId]);
 
     useEffect(() => {
-        if (isLoading) return; /* Initialization Guard */
+        if (appLoading) return; /* Initialization Guard */
 
         (async () => {
             try {
@@ -183,13 +172,12 @@ function App() {
 
     return(
         <>
-            <UserContext.Provider value={{isLogged, toggleIsLogged, address, changeAddress, isAdmin, chainId, votingStatus}}>
+            <UserContext.Provider value={{isLogged, toggleIsLogged, address, changeAddress, isAdmin, chainId, votingStatus, appLoading}}>
                 <Header/>
                 <div className="container-fluid mt-3">
-                    {!isLoading &&
+                    {!appLoading &&
                         <Routes>
-                            <Route path="/" element={<Home/>}/>
-                            <Route path="proposals" element={<Proposals/>}/>
+                            <Route path="/" element={<Proposals/>}/>
                             <Route path="admin" element={<AdminPanel/>}/>
                             <Route path="*" element={<ErrorPage/>}/>
                         </Routes>
