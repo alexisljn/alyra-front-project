@@ -10,7 +10,6 @@ import {
 } from "../Util";
 import {ContractManager} from "../managers/ContractManager";
 import LoadingModal from "./LoadingModal";
-import {Spinner} from "react-bootstrap";
 
 function AdminPanel() {
 
@@ -35,7 +34,7 @@ function AdminPanel() {
     const changeVotingStatus = useCallback(async (status: number) => {
         try {
 
-            if (status != getNextVotingStatus(votingStatus!)) {
+            if (status !== getNextVotingStatus(votingStatus!)) {
                 throw new Error('Invalid voting status')
             }
 
@@ -149,7 +148,7 @@ function AdminPanel() {
 
                 break;
         }
-    }, []);
+    }, [address, closeModal]);
 
     useEffect(() => {
         if (!isAdmin) {

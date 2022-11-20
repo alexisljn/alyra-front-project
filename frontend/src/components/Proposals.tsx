@@ -103,7 +103,7 @@ function Proposals() {
 
                 break;
         }
-    }, []);
+    }, [address]);
 
     useEffect(() => {
         (async () => {

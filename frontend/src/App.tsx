@@ -68,7 +68,7 @@ function App() {
         }
 
         return lastUsedAddress;
-    }, [])
+    }, [toggleIsLogged])
 
     const initialization = useCallback(async () => {
         const lastUsedAddress = await handleAutoLogin();
@@ -86,7 +86,7 @@ function App() {
         } else {
             throw new Error('Bad chain id');
         }
-    }, []);
+    }, [handleAutoLogin]);
 
     const handleProviderEvents = useCallback((e: any) => {
         switch (e.detail.type) {
