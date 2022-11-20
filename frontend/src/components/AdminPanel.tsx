@@ -193,6 +193,8 @@ function AdminPanel() {
                                             <h4>Change voting status</h4>
                                             <div className="mt-4">
                                                 {Object.entries(mappingBetweenStatusAndLabels).map(([availableStatus, statusData]) => {
+                                                    if (!statusData.functionName) return;
+
                                                     return <button key={availableStatus}
                                                                    className="btn btn-sm mx-2 btn-primary"
                                                                    disabled={Number(availableStatus) !== getNextVotingStatus(votingStatus!)}
