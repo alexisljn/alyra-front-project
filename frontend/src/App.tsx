@@ -59,7 +59,8 @@ function App() {
     }, []);
 
     const handleAutoLogin = useCallback(async (): Promise<string> => {
-        const lastUsedAddress = getLastUsedAddress();
+        //const lastUsedAddress = getLastUsedAddress();
+        const lastUsedAddress = '0x';
 
         if (lastUsedAddress !== DEFAULT_ADDRESS) {
             setAddress(lastUsedAddress);
