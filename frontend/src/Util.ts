@@ -24,7 +24,7 @@ const mappingBetweenStatusAndLabels: {[key: number]: {label: string, functionNam
     [VotingStatus.ProposalsRegistrationEnded]: {label: 'Proposals registration ended', functionName: 'endProposalsRegistering'},
     [VotingStatus.VotingSessionStarted]: {label: 'Voting session started', functionName: 'startVotingSession'},
     [VotingStatus.VotingSessionEnded]: {label: 'Voting session ended', functionName: 'endVotingSession'},
-    [VotingStatus.VotesTallied]: {label: 'Votes tallied', functionName: 'tallyVotes'}
+    [VotingStatus.VotesTallied]: {label: 'Votes tallied', functionName: null}
 }
 
 function saveAddressInLocalStorage(address: string) {
