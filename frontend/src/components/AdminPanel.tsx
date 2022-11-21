@@ -48,7 +48,7 @@ function AdminPanel() {
 
             throw new Error();
 
-        } catch (error: Error | any) {
+        } catch (error: any) {
             if (error.hasOwnProperty('error')) {
                 fireToast('error', error.error.data.message);
 
@@ -76,7 +76,7 @@ function AdminPanel() {
 
                 throw new Error();
 
-            } catch (error: Error | any) {
+            } catch (error: any) {
                 if (error.hasOwnProperty('error')) {
                     fireToast('error', error.error.data.message);
 
@@ -108,7 +108,7 @@ function AdminPanel() {
 
             throw new Error('Something went wrong')
 
-        } catch (error: Error | any) {
+        } catch (error: any) {
             if (error.hasOwnProperty('error')) {
                 fireToast('error', error.error.data.message);
 
