@@ -2,7 +2,10 @@ import React, {createContext, useCallback, useEffect, useState} from 'react';
 import './App.css';
 import Header from "./components/Header";
 import {
-    DEFAULT_ADDRESS, fireToast, getChainIdName,
+    DEFAULT_ADDRESS,
+    fireToast,
+    formatAddressWithChecksum,
+    getChainIdName,
     getLastUsedAddress,
     isChainIdCorrect,
     saveAddressInLocalStorage
@@ -55,14 +58,14 @@ function App() {
     }, []);
 
     const changeAddress = useCallback((address: string) => {
-        setAddress(address);
+        setAddress(formatAddressWithChecksum(address));
     }, []);
 
     const handleAutoLogin = useCallback(async (): Promise<string> => {
         const lastUsedAddress = getLastUsedAddress();
 
         if (lastUsedAddress !== DEFAULT_ADDRESS) {
-            setAddress(lastUsedAddress);
+            setAddress(formatAddressWithChecksum(lastUsedAddress));
 
             toggleIsLogged();
         }
@@ -95,7 +98,7 @@ function App() {
                 setChainId(e.detail.value);
                 break;
             case 'accountsChanged':
-                setAddress(e.detail.value);
+                setAddress(formatAddressWithChecksum(e.detail.value));
                 break;
         }
     }, []);
