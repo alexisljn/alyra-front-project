@@ -1,38 +1,38 @@
-# Hardhat Quickstart
+# Projet Alyra #3
 
-Simple and quick hardhat project for development.
+## Application frontend
 
-## Requirements
+## Liens
+- https://alyra-front-project.vercel.app/
+- Video : https://www.youtube.com/watch?v=d_BRReILxeg
+
+### Prérequis
+
 - Docker
 - Make
 
-## Commands
+### Commandes
 
-### Initialisation
-`make setup`
+#### Lancer le projet
+`docker compose up`
 
-### Start
-`docker compose up` to launch container and start hardhat local node
-
-### Compilation
-`make compile` 
-
-### Testing
-*Read makefile to consult options*
-
+#### Lancer les tests
 `make test`
 
-### Coverage
+#### Inspecter le coverage
 `make coverage`
 
-### Running scripts
-*Read makefile to consult options*
+#### Déployer le contrat
+`make run` *Puis suivre instructions* 
 
-`make run`
+### Instructions
 
-### Miscellaneous 
-#### launch hardhat console
-`make console`
+`frontend/.env.development` doit être complété en suivant `frontend/.env.default`.
 
-#### launch hardhat container bash
-`make bash`
+Pour fonctionner en local, la variable `REACT_APP_CHAIN_ID` doit être égal à `31337`
+(Ceci demandant peut être une modification dans les paramètres localhost de metamask).
+
+L'adresse du contrat sert de valeur à `REACT_APP_CONTRACT_ADDRESS`.
+
+Lors d'un changement de valeur, le container react doit être redémarré (`docker compose stop react` puis `docker compose start react`)
+pour que les modifications soient prises en compte.
