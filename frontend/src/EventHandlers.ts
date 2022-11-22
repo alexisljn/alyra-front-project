@@ -13,11 +13,13 @@ function handleChainChanged(hexChainId: any) {
 }
 
 function handleAccountsChanged(accounts: any) {
-    const address = String(accounts[0]);
+    if (accounts.length > 0) {
+        const address = String(accounts[0]);
 
-    const event = new CustomEvent(PROVIDER_EVENT, {detail: {type: 'accountsChanged', value: address}});
+        const event = new CustomEvent(PROVIDER_EVENT, {detail: {type: 'accountsChanged', value: address}});
 
-    window.dispatchEvent(event);
+        window.dispatchEvent(event);
+    }
 }
 
 function handleWorkflowStatusChange(oldStatus: number, newStatus: number) {
