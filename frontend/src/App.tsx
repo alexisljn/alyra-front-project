@@ -58,6 +58,12 @@ function App() {
     }, []);
 
     const changeAddress = useCallback((address: string) => {
+        if (address === DEFAULT_ADDRESS) {
+            setAddress(address);
+
+            return;
+        }
+
         setAddress(formatAddressWithChecksum(address));
     }, []);
 
