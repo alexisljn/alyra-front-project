@@ -1,5 +1,10 @@
 # Projet Alyra #3
 
+## Warning
+
+This project was a school project from Alyra, the french blockchain school.
+I had to develop frontend app for this voting contract but it's not a contract written by me.
+
 ## Application frontend
 
 ## Liens
