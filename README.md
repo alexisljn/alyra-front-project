@@ -7,9 +7,8 @@ I had to develop frontend app for this voting contract but it's not a contract w
 
 ## Application frontend
 
-## Liens
+## Lien
 - https://alyra-front-project.vercel.app/
-- Video : https://www.youtube.com/watch?v=d_BRReILxeg
 
 ### Prérequis
 
